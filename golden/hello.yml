@@ -1,0 +1,269 @@
+in_source: |-
+  11 ." hello world"
+in_stdin: |-
+  []
+out_code: |-
+  [{"index": 0, "command": "jmp", "arg": 1},
+   {"index": 1, "command": "push", "arg": 11},
+   {"index": 2, "command": "pop"},
+   {"index": 3, "command": "push", "arg": 11},
+   {"index": 4, "command": "push", "arg": 0},
+   {"index": 5, "command": "store"},
+   {"index": 6, "command": "push", "arg": 104},
+   {"index": 7, "command": "push", "arg": 1},
+   {"index": 8, "command": "store"},
+   {"index": 9, "command": "push", "arg": 101},
+   {"index": 10, "command": "push", "arg": 2},
+   {"index": 11, "command": "store"},
+   {"index": 12, "command": "push", "arg": 108},
+   {"index": 13, "command": "push", "arg": 3},
+   {"index": 14, "command": "store"},
+   {"index": 15, "command": "push", "arg": 108},
+   {"index": 16, "command": "push", "arg": 4},
+   {"index": 17, "command": "store"},
+   {"index": 18, "command": "push", "arg": 111},
+   {"index": 19, "command": "push", "arg": 5},
+   {"index": 20, "command": "store"},
+   {"index": 21, "command": "push", "arg": 32},
+   {"index": 22, "command": "push", "arg": 6},
+   {"index": 23, "command": "store"},
+   {"index": 24, "command": "push", "arg": 119},
+   {"index": 25, "command": "push", "arg": 7},
+   {"index": 26, "command": "store"},
+   {"index": 27, "command": "push", "arg": 111},
+   {"index": 28, "command": "push", "arg": 8},
+   {"index": 29, "command": "store"},
+   {"index": 30, "command": "push", "arg": 114},
+   {"index": 31, "command": "push", "arg": 9},
+   {"index": 32, "command": "store"},
+   {"index": 33, "command": "push", "arg": 108},
+   {"index": 34, "command": "push", "arg": 10},
+   {"index": 35, "command": "store"},
+   {"index": 36, "command": "push", "arg": 100},
+   {"index": 37, "command": "push", "arg": 11},
+   {"index": 38, "command": "store"},
+   {"index": 39, "command": "push", "arg": 0},
+   {"index": 40, "command": "load"},
+   {"index": 41, "command": "push", "arg": 0},
+   {"index": 42, "command": "push", "arg": 1},
+   {"index": 43, "command": "add"},
+   {"index": 44, "command": "over"},
+   {"index": 45, "command": "zjmp", "arg": 57},
+   {"index": 46, "command": "dup"},
+   {"index": 47, "command": "load"},
+   {"index": 48, "command": "rpop"},
+   {"index": 49, "command": "dup"},
+   {"index": 50, "command": "pop"},
+   {"index": 51, "command": "omit"},
+   {"index": 52, "command": "swap"},
+   {"index": 53, "command": "push", "arg": 1},
+   {"index": 54, "command": "sub"},
+   {"index": 55, "command": "swap"},
+   {"index": 56, "command": "jmp", "arg": 42},
+   {"index": 57, "command": "halt"}]
+out_stdout: |
+  source LoC: 1 code instr: 58
+  ============================================================
+  Output: hello world
+  Instructions: 212
+  Ticks: 631
+out_log: |
+  INFO    machine:__print__     TICK:    1 | PC:   0 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:    2 | PC:   1 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:    3 | PC:   1 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:    4 | PC:   1 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [11, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:    5 | PC:   2 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [11, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:    6 | PC:   2 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:    7 | PC:   2 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:    8 | PC:   2 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:    9 | PC:   3 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   10 | PC:   3 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   11 | PC:   3 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [11, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   12 | PC:   4 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [11, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   13 | PC:   4 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [11, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   14 | PC:   4 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [0, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   15 | PC:   5 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      11 | TOS : [0, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   16 | PC:   5 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      11 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   17 | PC:   5 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   18 | PC:   5 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   19 | PC:   6 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   20 | PC:   6 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   21 | PC:   6 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [104, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   22 | PC:   7 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [104, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   23 | PC:   7 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [104, 104, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   24 | PC:   7 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [1, 104, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   25 | PC:   8 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 104, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   26 | PC:   8 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   27 | PC:   8 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   28 | PC:   8 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   29 | PC:   9 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   30 | PC:   9 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   31 | PC:   9 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [101, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   32 | PC:  10 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [101, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   33 | PC:  10 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [101, 101, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   34 | PC:  10 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [2, 101, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   35 | PC:  11 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     101 | TOS : [2, 101, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   36 | PC:  11 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     101 | TOS : [2, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   37 | PC:  11 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   38 | PC:  11 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   39 | PC:  12 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   40 | PC:  12 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   41 | PC:  12 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   42 | PC:  13 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   43 | PC:  13 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   44 | PC:  13 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [3, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   45 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     108 | TOS : [3, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   46 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     108 | TOS : [3, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   47 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   48 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   49 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   50 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   51 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   52 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   53 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   54 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [4, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   55 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     108 | TOS : [4, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   56 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     108 | TOS : [4, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   57 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   58 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   59 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   60 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   61 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [111, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   62 | PC:  19 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [111, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   63 | PC:  19 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [111, 111, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   64 | PC:  19 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [5, 111, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   65 | PC:  20 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     111 | TOS : [5, 111, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   66 | PC:  20 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     111 | TOS : [5, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   67 | PC:  20 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   68 | PC:  20 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   69 | PC:  21 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   70 | PC:  21 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   71 | PC:  21 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [32, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   72 | PC:  22 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [32, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   73 | PC:  22 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [32, 32, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   74 | PC:  22 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [6, 32, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   75 | PC:  23 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      32 | TOS : [6, 32, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   76 | PC:  23 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      32 | TOS : [6, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   77 | PC:  23 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   78 | PC:  23 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   79 | PC:  24 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   80 | PC:  24 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   81 | PC:  24 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [119, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   82 | PC:  25 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [119, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   83 | PC:  25 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [119, 119, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   84 | PC:  25 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [7, 119, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   85 | PC:  26 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     119 | TOS : [7, 119, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   86 | PC:  26 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     119 | TOS : [7, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   87 | PC:  26 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   88 | PC:  26 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   89 | PC:  27 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   90 | PC:  27 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   91 | PC:  27 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [111, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   92 | PC:  28 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [111, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   93 | PC:  28 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [111, 111, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   94 | PC:  28 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8, 111, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   95 | PC:  29 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     111 | TOS : [8, 111, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   96 | PC:  29 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     111 | TOS : [8, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   97 | PC:  29 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   98 | PC:  29 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:   99 | PC:  30 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  100 | PC:  30 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  101 | PC:  30 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [114, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  102 | PC:  31 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [114, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  103 | PC:  31 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [114, 114, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  104 | PC:  31 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [9, 114, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  105 | PC:  32 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     114 | TOS : [9, 114, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  106 | PC:  32 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     114 | TOS : [9, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  107 | PC:  32 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  108 | PC:  32 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  109 | PC:  33 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  110 | PC:  33 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  111 | PC:  33 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  112 | PC:  34 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  113 | PC:  34 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [108, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  114 | PC:  34 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [10, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  115 | PC:  35 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     108 | TOS : [10, 108, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  116 | PC:  35 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     108 | TOS : [10, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  117 | PC:  35 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  118 | PC:  35 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  119 | PC:  36 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  120 | PC:  36 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  121 | PC:  36 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [100, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  122 | PC:  37 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [100, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  123 | PC:  37 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [100, 100, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  124 | PC:  37 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [11, 100, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  125 | PC:  38 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 100, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  126 | PC:  38 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  127 | PC:  38 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  128 | PC:  38 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  129 | PC:  39 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  130 | PC:  39 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  131 | PC:  39 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      11 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  132 | PC:  40 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  133 | PC:  41 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 8877, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  134 | PC:  41 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  135 | PC:  41 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      11 | TOS : [0, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  136 | PC:  42 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      11 | TOS : [0, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  137 | PC:  42 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]      11 | TOS : [0, 0, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  138 | PC:  42 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 0, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  139 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 0, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  140 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 0, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  141 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 0, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  142 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  143 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  144 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  145 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     100 | TOS : [11, 11, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  146 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     100 | TOS : [11, 1, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  147 | PC:  45 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  148 | PC:  45 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  149 | PC:  46 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  150 | PC:  46 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 1, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  151 | PC:  47 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]    4747 | TOS : [104, 1, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  152 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   4 | TEMP:       1 | DATA_MEMORY[TOP]    4747 | TOS : [104, 1, 11, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  153 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [104, 1, 11, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  154 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [104, 104, 1, 11, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  155 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 104, 1, 11, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  156 | PC:  49 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 104, 1, 11, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  157 | PC:  49 | PS_REQ 0 | PS_STATE: 1 | SP:   9 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 11, 104, 1, 11] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  158 | PC:  50 | PS_REQ 0 | PS_STATE: 1 | SP:   9 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 11, 104, 1, 11] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  159 | PC:  50 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 11, 1, 11, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  160 | PC:  50 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 104, 1, 11, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  161 | PC:  50 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 104, 1, 11, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  162 | PC:  51 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [104, 104, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  163 | PC:  51 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [104, 1, 11, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  164 | PC:  51 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  165 | PC:  51 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      11 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  166 | PC:  52 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  167 | PC:  52 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     100 | TOS : [11, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  168 | PC:  52 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     100 | TOS : [11, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  169 | PC:  53 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     100 | TOS : [11, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  170 | PC:  53 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     100 | TOS : [11, 11, 1, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  171 | PC:  53 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 1, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  172 | PC:  54 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     104 | TOS : [1, 11, 1, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  173 | PC:  54 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     108 | TOS : [10, 11, 1, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  174 | PC:  54 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     108 | TOS : [10, 11, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  175 | PC:  54 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       1 | DATA_MEMORY[TOP]     108 | TOS : [10, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  176 | PC:  55 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     108 | TOS : [10, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  177 | PC:  55 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     104 | TOS : [1, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  178 | PC:  55 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     104 | TOS : [1, 10, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  179 | PC:  41 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     104 | TOS : [1, 10, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  180 | PC:  42 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     104 | TOS : [1, 10, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  181 | PC:  42 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     104 | TOS : [1, 1, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  182 | PC:  42 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     104 | TOS : [1, 1, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  183 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     104 | TOS : [1, 1, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  184 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     101 | TOS : [2, 1, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  185 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     101 | TOS : [2, 1, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  186 | PC:  43 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     101 | TOS : [2, 10, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  187 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:      10 | DATA_MEMORY[TOP]     101 | TOS : [2, 10, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  188 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]     101 | TOS : [2, 10, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  189 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]     108 | TOS : [10, 10, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  190 | PC:  44 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]     108 | TOS : [10, 2, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  191 | PC:  45 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]     101 | TOS : [2, 2, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  192 | PC:  45 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]     101 | TOS : [2, 10, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  193 | PC:  46 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]     101 | TOS : [2, 10, 8877, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  194 | PC:  46 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]     101 | TOS : [2, 2, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  195 | PC:  47 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   5 | TEMP:       2 | DATA_MEMORY[TOP]    4747 | TOS : [101, 2, 10, 8877, 8877] | RETURN_TOS : [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  196 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   4 | TEMP:       2 | DATA_MEMORY[TOP]    4747 | TOS : [101, 2, 10, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  197 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   7 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [101, 2, 10, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  198 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]    4747 | TOS : [101, 101, 2, 10, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+  INFO    machine:__print__     TICK:  199 | PC:  48 | PS_REQ 0 | PS_STATE: 1 | SP:   8 | I:   4 | TEMP:      11 | DATA_MEMORY[TOP]     100 | TOS : [11, 101, 2, 10, 8877] | RETURN_TOS : [9988, 9988, 9988] 
