@@ -8,7 +8,7 @@
 
 ```text
 
-<procedure> →   ": " <procedure name> <program> " ;"
+<procedure> →  ": " <procedure name> <program> " ;"
 
 <program> →   <empty> | <word> | <program> " " <program> | <conditional operator> |
               <do loop operator> | <begin until operator> <variable declaration>
