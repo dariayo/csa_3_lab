@@ -344,7 +344,7 @@ ControlUnit реализован в [machine.py:ControlUnit](machine.py#L250)
 | call                                    | `MEM = PC + 1; SP += 1;`; `PC = IMMEDIATE`                                           | 2                 |
 | ret                                     | `PC = RETURN_STACK; I -= 1`                                                          | 1                 |
 
-Реализация дешифрации команд [machine.py:ControlUnit:decode_and_execute_instruction](machine.py#L318).
+Реализация дешифрации команд [machine.py:ControlUnit:decode_execute](machine.py#L318).
 
 ## Тестирование
 

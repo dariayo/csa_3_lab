@@ -90,7 +90,7 @@ class ALU:
         self.src_b = None
         self.operation = None
 
-    def alu_operation(self) -> None:
+    def alu_op(self) -> None: # noqa: C901 -- function is too complex
         if self.operation == ALUOpcode.INC_A:
             self.result = self.src_a + 1
         elif self.operation == ALUOpcode.INC_B:
@@ -230,7 +230,7 @@ class DataPath:
 
     def signal_alu_operation(self, operation: ALUOpcode) -> None:
         self.alu.set_details(self.top_of_stack, self.next, operation)
-        self.alu.alu_operation()
+        self.alu.alu_op()
 
 
 def opcode_to_alu_opcode(opcode_type: OpcodeType):
@@ -313,11 +313,11 @@ class ControlUnit:
 
     def command_cycle(self):
         self.instruction_number += 1
-        self.decode_and_execute_instr()
+        self.decode_execute()
         self.check_for_interrupts()
         self.signal_latch_pc(Selector.PC_INC)
 
-    def decode_and_execute_instr(self) -> None:
+    def decode_execute(self) -> None: # noqa: C901 -- function is too complex
         memory_cell = self.program_memory[self.data_path.pc]
         command = memory_cell["command"]
         arithmetic_operation = opcode_to_alu_opcode(command)
