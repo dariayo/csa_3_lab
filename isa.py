@@ -96,7 +96,7 @@ class TermType(Enum):
         LOOP_CNT,
         CALL,
         STRING,
-        ENTRYPOINT
+        ENTRYPOINT,
     ) = range(36)
 
 

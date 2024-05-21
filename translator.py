@@ -62,8 +62,7 @@ def word_to_term(word: str) -> Term | None:
 def split_to_terms(source_code: str) -> list[Term]:
     code_words = shlex.split(source_code.replace("\n", " "), posix=True)
     code_words = list(filter(lambda x: len(x) > 0, code_words))
-    terms = [Term(0, TermType.ENTRYPOINT,
-                  "")]
+    terms = [Term(0, TermType.ENTRYPOINT, "")]
     for word_number, word in enumerate(code_words):
         term_type = word_to_term(word)
         if word[:2] == ". ":
@@ -89,19 +88,15 @@ def set_functions(terms: list[Term]) -> None:
     func_indexes = []
     for term_index, term in enumerate(terms):
         if term.term_type is TermType.DEF or term.term_type is TermType.DEF_INTR:
-            assert term_index + 1 < len(terms), "Пропущено имя функции" + str(
-                term.word_number)
-            assert len(func_indexes) == 0, "Незакрытая функция в слове #" + str(
-                term.word_number)
-            assert term.word not in functions, "Повторяющаяся функция в слове #" + str(
-                term.word_number)
+            assert term_index + 1 < len(terms), "Пропущено имя функции" + str(term.word_number)
+            assert len(func_indexes) == 0, "Незакрытая функция в слове #" + str(term.word_number)
+            assert term.word not in functions, "Повторяющаяся функция в слове #" + str(term.word_number)
             func_indexes.append(term.word_number)
             func_name = terms[term_index + 1].word
             functions[func_name] = term.word_number + 1
             terms[term_index + 1].converted = True
         if term.term_type == TermType.RET:
-            assert len(func_indexes) >= 1, "RET не в функции в слове #" + str(
-                term.word_number)
+            assert len(func_indexes) >= 1, "RET не в функции в слове #" + str(term.word_number)
             function_term = terms[func_indexes.pop()]
             function_term.operand = term.word_number + 1
     assert len(func_indexes) == 0, "Незакрытая функция"
@@ -117,7 +112,8 @@ def set_variables(terms: list[Term]) -> None:
                 term.word_number + 1
             )
             assert terms[term_index + 1].word[0].isalpha(), "Неверное имя переменной в слове #" + str(
-                term.word_number + 1)
+                term.word_number + 1
+            )
             assert terms[term_index + 1] not in variables, " Переменная уже существует в слове #" + str(
                 term.word_number + 1
             )
@@ -128,8 +124,7 @@ def set_variables(terms: list[Term]) -> None:
                 set_allot_for_variable(terms, term_index + 3)
 
 
-def set_allot_for_variable(terms: list[Term],
-                           term_index: int) -> None:
+def set_allot_for_variable(terms: list[Term], term_index: int) -> None:
     global variable_current_address
     assert term_index + 3 < len(terms), "Неверное объявление выделения"
     term = terms[term_index]
@@ -137,8 +132,7 @@ def set_allot_for_variable(terms: list[Term],
         assert term_index - 3 >= 0, "Неверное объявление выделения в слове #" + str(term.word_number)
         terms[term_index - 1].converted = True
         try:
-            allot_size = int(terms[
-                                 term_index - 1].word)
+            allot_size = int(terms[term_index - 1].word)
             assert 1 <= allot_size <= 100, "Неверный размер выделения в слове #" + str(term.word_number - 1)
             variable_current_address += allot_size
         except ValueError:
@@ -153,8 +147,7 @@ def set_if_else_then(terms: list[Term]) -> None:
         elif term.term_type is TermType.ELSE:
             nested_ifs.append(term)
         elif term.term_type is TermType.THEN:
-            assert len(nested_ifs) > 0, "IF-ELSE-THEN несбалансированный в слове #" + str(
-                term.word_number)
+            assert len(nested_ifs) > 0, "IF-ELSE-THEN несбалансированный в слове #" + str(term.word_number)
             last_if = nested_ifs.pop()
             if last_if.term_type is TermType.ELSE:
                 last_else = last_if
@@ -182,10 +175,8 @@ def replace_vars_funcs(terms: list[Term]) -> None:
 
 
 def validate_and_fix_terms(terms: list[Term]) -> None:
-    set_closed_indexes(terms, TermType.DO, TermType.LOOP,
-                       "Несбалансированный do ... loop")
-    set_closed_indexes(terms, TermType.BEGIN, TermType.UNTIL,
-                       "Несбалансированный begin ... until")
+    set_closed_indexes(terms, TermType.DO, TermType.LOOP, "Несбалансированный do ... loop")
+    set_closed_indexes(terms, TermType.BEGIN, TermType.UNTIL, "Несбалансированный begin ... until")
     set_functions(terms)
     set_variables(terms)
     replace_vars_funcs(terms)
@@ -321,8 +312,7 @@ def fix_addresses(term_opcodes: list[list[Opcode]]) -> list[Opcode]:
     pref_sum = [0]
     for term_num, opcodes in enumerate(term_opcodes):
         term_opcode_cnt = len(opcodes)
-        pref_sum.append(
-            pref_sum[term_num] + term_opcode_cnt)
+        pref_sum.append(pref_sum[term_num] + term_opcode_cnt)
     for term_opcode in list(filter(lambda x: x is not None, term_opcodes)):
         for opcode in term_opcode:
             for param_num, param in enumerate(opcode.params):
@@ -330,8 +320,7 @@ def fix_addresses(term_opcodes: list[list[Opcode]]) -> list[Opcode]:
                     opcode.params[param_num].value = pref_sum[param.value]
                     opcode.params[param_num].param_type = OpcodeParamType.CONST
                 if param.param_type is OpcodeParamType.ADDR_REL:
-                    opcode.params[param_num].value = len(result_opcodes) + opcode.params[
-                        param_num].value
+                    opcode.params[param_num].value = len(result_opcodes) + opcode.params[param_num].value
                     opcode.params[param_num].param_type = OpcodeParamType.CONST
             result_opcodes.append(opcode)
     return result_opcodes
