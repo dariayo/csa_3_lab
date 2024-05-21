@@ -244,16 +244,16 @@
 На данном этапе проводится валидация термов, оповещение пользователя в случае неуспешной трансляции с указанием ошибки и
 номера слова, в котором ошибка
 
-Реализуется функцией [translator.py:validate_and_fix_terms](translator.py#L185).
+Реализуется функцией [translator.py:validate_and_fix_terms](translator.py#L177).
 
 ### 3)Генерация машинного кода
 
 Одному терму может соответствовать несколько Opcode.
 
-1. [translator.py:fix_interrupt](translator.py#L340): Этот вызов функции гарантирует, что для обработки прерываний в
+1. [translator.py:fix_interrupt](translator.py#L329): Этот вызов функции гарантирует, что для обработки прерываний в
    список терминов добавлен
    специальный термин.
-2. Для каждого термина в списке terms функция [translator.py:term2opcodes](translator.py#L239) вызывается для
+2. Для каждого термина в списке terms функция [translator.py:term2opcodes](translator.py#L230) вызывается для
    преобразования
    термина в список кодов операций
 3. [translator.py:fix_addresses](translator.py#L319): Этот вызов функции гарантирует, что адреса в кодах операций
@@ -275,7 +275,7 @@
 различные варианты адресации в машинных командах (абсолютная - на конкретный терм и относительная - по отношению к
 текущей позиции).
 
-Функция [translator.py:fix_addresses_in_opcodes](translator.py#L320) реализует этот процесс.
+Функция [translator.py:fix_addresses](translator.py#L310) реализует этот процесс.
 
 Целочисленные литералы преобразуются в машинную команду `PUSH <int>`. Подобный механизм используется и для строковых
 литералов, которые в языке Forth применяются для вывода на внешние устройства. Строковый литерал вида `." string"`
@@ -325,26 +325,26 @@ ControlUnit реализован в [machine.py:ControlUnit](machine.py#L250)
 * `PS` - program state, 2 бита: разрешены ли прерывания, есть ли запрос на прерывания
 * `TOP` - значение верхушки стека
 * `NEXT` - значение второго элемента сверху на стеке
-* `TEMP` - временный регистр
+* `MEDIUM` - временный регистр
 
-| Инструкция                              | Действия процессора                                                                  | Количество тактов |
-|:----------------------------------------|:-------------------------------------------------------------------------------------|-------------------|
-| mul, div, sub, add, or, mod, eq, gr, ls | `TOP = TOP x NEXT`; `NEXT = MEM; SP -= 1`                                            | 2                 |
-| drop                                    | `TOP = NEXT`; `NEXT = MEM; SP -= 1`                                                  | 2                 |
-| swap                                    | `TEMP = TOP`; `TOP = NEXT`; `NEXT = TEMP`                                            | 3                 |
-| over                                    | `TEMP = TOP`; `TOP = NEXT`; `NEXT = TEMP`; `MEM = TOP; SP += 1`                      | 4                 |
-| dup                                     | `MEM = NEXT`; `NEXT = TOP; SP += 1`                                                  | 2                 |
-| store                                   | `VAL = NEXT; ADDR = TOP`; `NEXT = MEM; SP -= 1`; `TOP = NEXT`; `NEXT = MEM; SP -= 1` | 4                 |
-| load                                    | `ADDR = TOP`; `TOP = DATA_MEMORY`                                                    | 2                 |
-| push                                    | `MEM = NEXT`; `NEXT = TOP`; `TOP = IMMEDIATE`                                        | 3                 |
-| pop                                     | `TEMP = TOP`; `TOP = NEXT`; `NEXT = MEM; SP -= 1`; `RETURN_STACK = TEMP; I += 1`     | 4                 |
-| rpop                                    | `TEMP = RETURN_STACK; I -= 1`; `MEM = NEXT; SP += 1`; `NEXT = TOP;`; `TOP = TEMP`    | 4                 |
-| jmp                                     | `PC = IMMEDIATE`                                                                     | 1                 |
-| zjmp                                    | `PC = IMM; TOP = NEXT`; `NEXT = MEM; SP -= 1`                                        | 2                 |
-| call                                    | `MEM = PC + 1; SP += 1;`; `PC = IMMEDIATE`                                           | 2                 |
-| ret                                     | `PC = RETURN_STACK; I -= 1`                                                          | 1                 |
+| Инструкция                              | Действия процессора                                                                   | Количество тактов |
+|:----------------------------------------|:--------------------------------------------------------------------------------------|-------------------|
+| mul, div, sub, add, or, mod, eq, gr, ls | `TOP = TOP x NEXT`; `NEXT = MEM; SP -= 1`                                             | 2                 |
+| drop                                    | `TOP = NEXT`; `NEXT = MEM; SP -= 1`                                                   | 2                 |
+| swap                                    | `MEDIUM = TOP`; `TOP = NEXT`; `NEXT = MEDIUM`                                         | 3                 |
+| over                                    | `MEDIUM = TOP`; `TOP = NEXT`; `NEXT = MEDIUM`; `MEM = TOP; SP += 1`                   | 4                 |
+| dup                                     | `MEM = NEXT`; `NEXT = TOP; SP += 1`                                                   | 2                 |
+| store                                   | `VAL = NEXT; ADDR = TOP`; `NEXT = MEM; SP -= 1`; `TOP = NEXT`; `NEXT = MEM; SP -= 1`  | 4                 |
+| load                                    | `ADDR = TOP`; `TOP = DATA_MEMORY`                                                     | 2                 |
+| push                                    | `MEM = NEXT`; `NEXT = TOP`; `TOP = IMMEDIATE`                                         | 3                 |
+| pop                                     | `MEDIUM = TOP`; `TOP = NEXT`; `NEXT = MEM; SP -= 1`; `RETURN_STACK = MEDIUM; I += 1`  | 4                 |
+| rpop                                    | `MEDIUM = RETURN_STACK; I -= 1`; `MEM = NEXT; SP += 1`; `NEXT = TOP;`; `TOP = MEDIUM` | 4                 |
+| jmp                                     | `PC = IMMEDIATE`                                                                      | 1                 |
+| zjmp                                    | `PC = IMM; TOP = NEXT`; `NEXT = MEM; SP -= 1`                                         | 2                 |
+| call                                    | `MEM = PC + 1; SP += 1;`; `PC = IMMEDIATE`                                            | 2                 |
+| ret                                     | `PC = RETURN_STACK; I -= 1`                                                           | 1                 |
 
-Реализация дешифрации команд [machine.py:ControlUnit:decode_execute](machine.py#L318).
+Реализация дешифрации команд [machine.py:ControlUnit:decode_execute](machine.py#L320).
 
 ## Тестирование
 
@@ -368,17 +368,17 @@ on:
       - master
     paths:
       - ".github/workflows/*"
-      - "Translator-Model/**"
+      - "./**"
   pull_request:
     branches:
       - master
     paths:
       - ".github/workflows/*"
-      - "Translator-Model/**"
+      - "./**"
 
 defaults:
   run:
-    working-directory: ./Translator-Model
+    working-directory: .
 
 jobs:
   test:
@@ -459,33 +459,33 @@ $ cat target.out
  {"index": 19, "command": "zjmp", "arg": 17},
  {"index": 20, "command": "halt"}]
 $ python machine.py examples/machine/cat.json examples/input/cat.txt
-TICK:    1 | PC:  13 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    2 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    3 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    4 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    5 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    6 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    7 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [512, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    8 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    9 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   10 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   11 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   12 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   13 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   14 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   15 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   16 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   17 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   18 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   19 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   20 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   21 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   22 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   23 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   24 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   25 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   26 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   27 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | TEMP:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    1 | PC:  13 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    2 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    3 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    4 | PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    5 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    6 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    7 | PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [512, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    8 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    9 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   10 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   11 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   12 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   13 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   14 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   15 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   16 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   17 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   18 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   19 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   20 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   21 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   22 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   23 | PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   24 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   25 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   26 | PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:   27 | PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
 Output: hello
 
 Instructions: 200

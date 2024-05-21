@@ -26,11 +26,11 @@ class Selector(str, Enum):
     RET_STACK_OUT = "ret_stack_out"
     NEXT_MEM = "next_mem"
     NEXT_TOP = "next_top"
-    NEXT_TEMP = "next_temp"
-    TEMP_NEXT = "temp_next"
-    TEMP_TOP = "temp_top"
-    TEMP_RETURN = "temp_return"
-    TOP_TEMP = "top_temp"
+    NEXT_MEDIUM = "next_medium"
+    MEDIUM_NEXT = "medium_next"
+    MEDIUM_TOP = "medium_top"
+    MEDIUM_RETURN = "medium_return"
+    TOP_MEDIUM = "top_medium"
     TOP_NEXT = "top_next"
     TOP_ALU = "top_alu"
     TOP_MEM = "top_mem"
@@ -139,7 +139,7 @@ class DataPath:
     pc = None
     top_of_stack = None
     next = None
-    temp = None
+    medium = None
 
     alu = None
 
@@ -160,7 +160,7 @@ class DataPath:
         self.pc = 0
         self.top_of_stack = 8877
         self.next = 8877
-        self.temp = 8877
+        self.medium = 8877
 
         self.alu = ALU()
 
@@ -183,24 +183,24 @@ class DataPath:
             self.next = self.data_stack[self.sp]
         elif selector is Selector.NEXT_TOP:
             self.next = self.top_of_stack
-        elif selector is Selector.NEXT_TEMP:
-            self.next = self.temp
+        elif selector is Selector.NEXT_MEDIUM:
+            self.next = self.medium
 
-    def signal_latch_temp(self, selector: Selector) -> None:
-        if selector is Selector.TEMP_RETURN:
+    def signal_latch_medium(self, selector: Selector) -> None:
+        if selector is Selector.MEDIUM_RETURN:
             assert self.i >= 0, "Адрес меньше 0"
             assert self.i < self.return_stack_size, "Переполнение стека возврата"
-            self.temp = self.return_stack[self.i]
-        elif selector is Selector.TEMP_TOP:
-            self.temp = self.top_of_stack
-        elif selector is Selector.TEMP_NEXT:
-            self.temp = self.next
+            self.medium = self.return_stack[self.i]
+        elif selector is Selector.MEDIUM_TOP:
+            self.medium = self.top_of_stack
+        elif selector is Selector.MEDIUM_NEXT:
+            self.medium = self.next
 
     def signal_latch_top(self, selector: Selector, immediate=0) -> None:
         if selector is Selector.TOP_NEXT:
             self.top_of_stack = self.next
-        elif selector is Selector.TOP_TEMP:
-            self.top_of_stack = self.temp
+        elif selector is Selector.TOP_MEDIUM:
+            self.top_of_stack = self.medium
         elif selector is Selector.TOP_INPUT:
             self.top_of_stack = 47474747
         elif selector is Selector.TOP_ALU:
@@ -221,7 +221,7 @@ class DataPath:
         if selector is Selector.RET_STACK_PC:
             self.return_stack[self.i] = self.pc
         elif selector is Selector.RET_STACK_OUT:
-            self.return_stack[self.i] = self.temp
+            self.return_stack[self.i] = self.medium
 
     def signal_mem_write(self) -> None:
         assert self.top_of_stack >= 0, "Адрес меньше 0"
@@ -378,19 +378,19 @@ class ControlUnit:
             )
             self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_IMMEDIATE, ord(self.IO))])
         elif command == OpcodeType.SWAP:
-            self.tick([lambda: self.data_path.signal_latch_temp(Selector.TEMP_TOP)])
+            self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
             self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_TEMP)])
+            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
         elif command == OpcodeType.OVER:
             self.tick([lambda: self.data_path.signal_data_wr()])
             self.tick(
                 [
-                    lambda: self.data_path.signal_latch_temp(Selector.TEMP_TOP),
+                    lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP),
                     lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
                 ]
             )
             self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_TEMP)])
+            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
         elif command == OpcodeType.DUP:
             self.tick([lambda: self.data_path.signal_data_wr()])
             self.tick(
@@ -414,7 +414,7 @@ class ControlUnit:
             )
             self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
         elif command == OpcodeType.POP:
-            self.tick([lambda: self.data_path.signal_latch_temp(Selector.TEMP_TOP)])
+            self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
             self.tick(
                 [
                     lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
@@ -432,7 +432,7 @@ class ControlUnit:
             self.tick([lambda: self.data_path.signal_latch_i(Selector.I_DEC)])
             self.tick(
                 [
-                    lambda: self.data_path.signal_latch_temp(Selector.TEMP_RETURN),
+                    lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_RETURN),
                     lambda: self.data_path.signal_data_wr(),
                 ]
             )
@@ -442,7 +442,7 @@ class ControlUnit:
                     lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
                 ]
             )
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_TEMP)])
+            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_MEDIUM)])
         elif command == OpcodeType.ZJMP:
             if self.data_path.top_of_stack == 0:
                 self.tick(
@@ -487,7 +487,7 @@ class ControlUnit:
         ret_tos = self.data_path.return_stack[self.data_path.i - 1 : self.data_path.i - 4 : -1]
         state_repr = (
             "TICK: {:4} | PC: {:3} | PS_REQ {:1} | PS_STATE: {:1} | SP: {:3} | I: {:3} | "
-            "TEMP: {:7} | DATA_MEMORY[TOP] {:7} | TOS : {} | RETURN_TOS : {}"
+            "MEDIUM: {:7} | DATA_MEMORY[TOP] {:7} | TOS : {} | RETURN_TOS : {}"
         ).format(
             self.tick_number,
             self.data_path.pc,
@@ -495,7 +495,7 @@ class ControlUnit:
             self.ps["Intr_On"],
             self.data_path.sp,
             self.data_path.i,
-            self.data_path.temp,
+            self.data_path.medium,
             self.data_path.memory[self.data_path.top_of_stack]
             if self.data_path.top_of_stack < self.data_path.memory_size
             else "?",
