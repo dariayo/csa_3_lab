@@ -22,7 +22,6 @@ class OpcodeParam:
 
 class OpcodeType(str, Enum):
     DROP = "drop"
-    MUL = "mul"
     DIV = "div"
     SUB = "sub"
     ADD = "add"
@@ -31,7 +30,6 @@ class OpcodeType(str, Enum):
     OVER = "over"
     DUP = "dup"
     EQ = "eq"
-    GR = "gr"
     LS = "ls"
     OR = "or"
     DI = "di"
@@ -66,7 +64,6 @@ class TermType(Enum):
         DUP,
         ADD,
         SUB,
-        MUL,
         DIV,
         MOD,
         OMIT,
@@ -76,7 +73,6 @@ class TermType(Enum):
         EQ,
         LS,
         OR,
-        GR,
         READ,
         VARIABLE,
         ALLOT,
@@ -97,8 +93,42 @@ class TermType(Enum):
         CALL,
         STRING,
         ENTRYPOINT,
-    ) = range(36)
+    ) = range(34)
 
+def word_to_term(word: str) -> Term | None:
+    return {
+        "di": TermType.DI,
+        "ei": TermType.EI,
+        "dup": TermType.DUP,
+        "+": TermType.ADD,
+        "-": TermType.SUB,
+        "/": TermType.DIV,
+        "mod": TermType.MOD,
+        "omit": TermType.OMIT,
+        "read": TermType.READ,
+        "swap": TermType.SWAP,
+        "drop": TermType.DROP,
+        "over": TermType.OVER,
+        "=": TermType.EQ,
+        "<": TermType.LS,
+        "variable": TermType.VARIABLE,
+        "allot": TermType.ALLOT,
+        "!": TermType.STORE,
+        "@": TermType.LOAD,
+        "if": TermType.IF,
+        "else": TermType.ELSE,
+        "then": TermType.THEN,
+        ".": TermType.OMIT,
+        ":": TermType.DEF,
+        ";": TermType.RET,
+        ":intr": TermType.DEF_INTR,
+        "do": TermType.DO,
+        "loop": TermType.LOOP,
+        "begin": TermType.BEGIN,
+        "until": TermType.UNTIL,
+        "i": TermType.LOOP_CNT,
+        "or": TermType.OR,
+    }.get(word)
 
 def write_code(filename: str, code: list[dict]):
     with open(filename, "w", encoding="utf-8") as file:

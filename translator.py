@@ -3,7 +3,7 @@ from __future__ import annotations
 import shlex
 import sys
 
-from isa import Opcode, OpcodeParam, OpcodeParamType, OpcodeType, TermType, write_code
+from isa import Opcode, OpcodeParam, OpcodeParamType, OpcodeType, TermType, write_code, word_to_term
 
 
 class Term:
@@ -21,44 +21,6 @@ string_current_address = 0
 functions = {}
 
 
-def word_to_term(word: str) -> Term | None:
-    return {
-        "di": TermType.DI,
-        "ei": TermType.EI,
-        "dup": TermType.DUP,
-        "+": TermType.ADD,
-        "-": TermType.SUB,
-        "*": TermType.MUL,
-        "/": TermType.DIV,
-        "mod": TermType.MOD,
-        "omit": TermType.OMIT,
-        "read": TermType.READ,
-        "swap": TermType.SWAP,
-        "drop": TermType.DROP,
-        "over": TermType.OVER,
-        "=": TermType.EQ,
-        "<": TermType.LS,
-        ">": TermType.GR,
-        "variable": TermType.VARIABLE,
-        "allot": TermType.ALLOT,
-        "!": TermType.STORE,
-        "@": TermType.LOAD,
-        "if": TermType.IF,
-        "else": TermType.ELSE,
-        "then": TermType.THEN,
-        ".": TermType.OMIT,
-        ":": TermType.DEF,
-        ";": TermType.RET,
-        ":intr": TermType.DEF_INTR,
-        "do": TermType.DO,
-        "loop": TermType.LOOP,
-        "begin": TermType.BEGIN,
-        "until": TermType.UNTIL,
-        "i": TermType.LOOP_CNT,
-        "or": TermType.OR,
-    }.get(word)
-
-
 def split_to_terms(source_code: str) -> list[Term]:
     code_words = shlex.split(source_code.replace("\n", " "), posix=True)
     code_words = list(filter(lambda x: len(x) > 0, code_words))
@@ -72,15 +34,15 @@ def split_to_terms(source_code: str) -> list[Term]:
     return terms
 
 
-def set_closed_indexes(terms: list[Term], begin: TermType, end: TermType, error_message: str) -> None:
-    nested = []
+def validate_indexes(terms: list[Term], begin: TermType, end: TermType, error: str) -> None:
+    begin_indexes = []
     for term_index, term in enumerate(terms):
         if term.term_type is begin:
-            nested.append(term.word_number)
+            begin_indexes.append(term_index)
         if term.term_type == end:
-            assert len(nested) > 0, error_message + " в слове #" + str(term.word_number)
-            term.operand = nested.pop()
-    assert len(nested) == 0, error_message
+            assert len(begin_indexes) > 0, error + " в слове #" + str(term.word_number)
+            term.operand = begin_indexes.pop()
+    assert len(begin_indexes) == 0, error
 
 
 def set_functions(terms: list[Term]) -> None:
@@ -175,8 +137,8 @@ def replace_vars_funcs(terms: list[Term]) -> None:
 
 
 def validate_and_fix_terms(terms: list[Term]) -> None:
-    set_closed_indexes(terms, TermType.DO, TermType.LOOP, "Несбалансированный do ... loop")
-    set_closed_indexes(terms, TermType.BEGIN, TermType.UNTIL, "Несбалансированный begin ... until")
+    validate_indexes(terms, TermType.DO, TermType.LOOP, "Несбалансированный do ... loop")
+    validate_indexes(terms, TermType.BEGIN, TermType.UNTIL, "Несбалансированный begin ... until")
     set_functions(terms)
     set_variables(terms)
     replace_vars_funcs(terms)
@@ -235,7 +197,6 @@ def term2opcodes(term: Term) -> list[Opcode]:
         TermType.ADD: [Opcode(OpcodeType.ADD, [])],
         TermType.OR: [Opcode(OpcodeType.OR, [])],
         TermType.SUB: [Opcode(OpcodeType.SUB, [])],
-        TermType.MUL: [Opcode(OpcodeType.MUL, [])],
         TermType.DIV: [Opcode(OpcodeType.DIV, [])],
         TermType.MOD: [Opcode(OpcodeType.MOD, [])],
         TermType.OMIT: [Opcode(OpcodeType.OMIT, [])],
@@ -244,7 +205,6 @@ def term2opcodes(term: Term) -> list[Opcode]:
         TermType.OVER: [Opcode(OpcodeType.OVER, [])],
         TermType.EQ: [Opcode(OpcodeType.EQ, [])],
         TermType.LS: [Opcode(OpcodeType.LS, [])],
-        TermType.GR: [Opcode(OpcodeType.GR, [])],
         TermType.READ: [Opcode(OpcodeType.READ, [])],
         TermType.VARIABLE: [],
         TermType.ALLOT: [],

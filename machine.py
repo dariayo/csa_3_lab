@@ -51,11 +51,9 @@ class ALUOpcode(str, Enum):
     DEC_B = "dec_b"
     ADD = "add"
     SUB = "sub"
-    MUL = "mul"
     DIV = "div"
     MOD = "mod"
     EQ = "eq"
-    GR = "gr"
     LS = "ls"
     OR = "or"
 
@@ -71,11 +69,9 @@ class ALU:
         ALUOpcode.DEC_B,
         ALUOpcode.ADD,
         ALUOpcode.SUB,
-        ALUOpcode.MUL,
         ALUOpcode.DIV,
         ALUOpcode.MOD,
         ALUOpcode.EQ,
-        ALUOpcode.GR,
         ALUOpcode.LS,
         ALUOpcode.OR,
     ]
@@ -101,8 +97,6 @@ class ALU:
             self.result = self.src_b - 1
         elif self.operation == ALUOpcode.ADD:
             self.result = self.src_a + self.src_b
-        elif self.operation == ALUOpcode.MUL:
-            self.result = self.src_a * self.src_b
         elif self.operation == ALUOpcode.DIV:
             self.result = self.src_b // self.src_a
         elif self.operation == ALUOpcode.SUB:
@@ -111,8 +105,6 @@ class ALU:
             self.result = self.src_b % self.src_a
         elif self.operation == ALUOpcode.EQ:
             self.result = int(self.src_a == self.src_b)
-        elif self.operation == ALUOpcode.GR:
-            self.result = int(self.src_a < self.src_b)
         elif self.operation == ALUOpcode.LS:
             self.result = int(self.src_a >= self.src_b)
         elif self.operation == ALUOpcode.OR:
@@ -142,12 +134,17 @@ class DataPath:
     medium = None
 
     alu = None
+    input_tokens: typing.ClassVar[list[tuple]] = []
+    tokens_handled: typing.ClassVar[list[bool]] = []
+    out_buffer = ""
 
-    def __init__(self, memory_size: int, data_stack_size: int, return_stack_size: int):
+    def __init__(self, memory_size: int, data_stack_size: int, return_stack_size: int, input_tokens: list[tuple]):
         assert memory_size > 0, "Размер памяти данных должен быть > 0"
         assert data_stack_size > 0, "Размер стека данных должен быть > 0"
         assert return_stack_size > 0, "Размер стека возврата должен быть > 0"
 
+        self.input_tokens = input_tokens
+        self.tokens_handled = [False for _ in input_tokens]
         self.memory_size = memory_size
         self.memory = [4747] * memory_size
         self.data_stack_size = data_stack_size
@@ -235,35 +232,28 @@ class DataPath:
 
 def opcode_to_alu_opcode(opcode_type: OpcodeType):
     return {
-        OpcodeType.MUL: ALUOpcode.MUL,
         OpcodeType.DIV: ALUOpcode.DIV,
         OpcodeType.SUB: ALUOpcode.SUB,
         OpcodeType.ADD: ALUOpcode.ADD,
         OpcodeType.MOD: ALUOpcode.MOD,
         OpcodeType.EQ: ALUOpcode.EQ,
-        OpcodeType.GR: ALUOpcode.GR,
         OpcodeType.LS: ALUOpcode.LS,
         OpcodeType.OR: ALUOpcode.OR,
     }.get(opcode_type)
 
 
 class ControlUnit:
-    out_buffer = ""
     program_memory_size = None
     program_memory = None
     data_path = None
     ps = None
-    IO = "h"
-    input_tokens: typing.ClassVar[list[tuple]] = []
-    tokens_handled: typing.ClassVar[list[bool]] = []
+    IO = ""
 
     tick_number = 0
     instruction_number = 0
 
-    def __init__(self, data_path: DataPath, program_memory_size: int, input_tokens: list[tuple]):
+    def __init__(self, data_path: DataPath, program_memory_size: int):
         self.data_path = data_path
-        self.input_tokens = input_tokens
-        self.tokens_handled = [False for _ in input_tokens]
         self.program_memory_size = program_memory_size
         self.program_memory = [{"index": x, "command": 0, "arg": 0} for x in range(self.program_memory_size)]
         self.ps = {"Intr_Req": False, "Intr_On": True}
@@ -284,16 +274,16 @@ class ControlUnit:
 
     def signal_latch_ps(self, intr_on: bool) -> None:
         self.ps["Intr_On"] = intr_on
-        self.ps["Intr_Req"] = self.check_for_interrupts()
+        self.ps["Intr_Req"] = self.find_interrupt()
 
-    def check_for_interrupts(self) -> bool:
+    def find_interrupt(self) -> bool:
         if self.ps["Intr_On"]:
-            for index, interrupt in enumerate(self.input_tokens):
-                if not self.tokens_handled[index] and interrupt[0] <= self.tick_number:
+            for index, interrupt in enumerate(self.data_path.input_tokens):
+                if not self.data_path.tokens_handled[index] and interrupt[0] <= self.tick_number:
                     self.IO = interrupt[1]
                     self.ps["Intr_Req"] = True
                     self.ps["Intr_On"] = False
-                    self.tokens_handled[index] = True
+                    self.data_path.tokens_handled[index] = True
                     self.tick([lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_PC)])
                     self.tick(
                         [
@@ -314,18 +304,21 @@ class ControlUnit:
     def command_cycle(self):
         self.instruction_number += 1
         self.decode_execute()
-        self.check_for_interrupts()
+        self.find_interrupt()
         self.signal_latch_pc(Selector.PC_INC)
+
+    def arithmetic(self, arithmetic_operation):
+        self.tick([lambda: self.data_path.signal_alu_operation(arithmetic_operation)])
+        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_ALU)])
+        self.tick([lambda: self.data_path.signal_latch_sp(Selector.SP_DEC)])
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
 
     def decode_execute(self) -> None:  # noqa: C901 -- function is too complex
         memory_cell = self.program_memory[self.data_path.pc]
         command = memory_cell["command"]
         arithmetic_operation = opcode_to_alu_opcode(command)
         if arithmetic_operation:
-            self.tick([lambda: self.data_path.signal_alu_operation(arithmetic_operation)])
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_ALU)])
-            self.tick([lambda: self.data_path.signal_latch_sp(Selector.SP_DEC)])
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+            self.arithmetic(arithmetic_operation)
         elif command == OpcodeType.PUSH:
             self.tick([lambda: self.data_path.signal_data_wr()])
             self.tick(
@@ -345,9 +338,9 @@ class ControlUnit:
             self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
         elif command == OpcodeType.OMIT:
             if chr(self.data_path.next) == "⊭":
-                self.out_buffer += str(self.data_path.top_of_stack)
+                self.data_path.out_buffer += str(self.data_path.top_of_stack)
             else:
-                self.out_buffer += chr(self.data_path.next)
+                self.data_path.out_buffer += chr(self.data_path.next)
             self.tick(
                 [
                     lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
@@ -482,9 +475,9 @@ class ControlUnit:
             raise StopIteration
 
     def __print__(self, comment: str) -> None:
-        tos_memory = self.data_path.data_stack[self.data_path.sp - 1 : self.data_path.sp - 4 : -1]
+        tos_memory = self.data_path.data_stack[self.data_path.sp - 1: self.data_path.sp - 4: -1]
         tos = [self.data_path.top_of_stack, self.data_path.next, *tos_memory]
-        ret_tos = self.data_path.return_stack[self.data_path.i - 1 : self.data_path.i - 4 : -1]
+        ret_tos = self.data_path.return_stack[self.data_path.i - 1: self.data_path.i - 4: -1]
         state_repr = (
             "TICK: {:4} | PC: {:3} | PS_REQ {:1} | PS_STATE: {:1} | SP: {:3} | I: {:3} | "
             "MEDIUM: {:7} | DATA_MEMORY[TOP] {:7} | TOS : {} | RETURN_TOS : {}"
@@ -506,15 +499,15 @@ class ControlUnit:
 
 
 def simulation(code: list, limit: int, input_tokens: list[tuple]):
-    data_path = DataPath(15000, 15000, 15000)
-    control_unit = ControlUnit(data_path, 15000, input_tokens)
+    data_path = DataPath(10000, 10000, 10000, input_tokens)
+    control_unit = ControlUnit(data_path, 10000)
     control_unit.fill_memory(code)
     while control_unit.instruction_number < limit:
         try:
             control_unit.command_cycle()
         except StopIteration:
             break
-    return [control_unit.out_buffer, control_unit.instruction_number, control_unit.tick_number]
+    return [data_path.out_buffer, control_unit.instruction_number, control_unit.tick_number]
 
 
 def main(code_file: str, token_path: str | None) -> None:
