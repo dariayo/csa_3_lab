@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from enum import Enum
 
+from translator import Term
+
 
 class OpcodeParamType(str, Enum):
     CONST = "const"
@@ -95,6 +97,7 @@ class TermType(Enum):
         ENTRYPOINT,
     ) = range(34)
 
+
 def word_to_term(word: str) -> Term | None:
     return {
         "di": TermType.DI,
@@ -129,6 +132,7 @@ def word_to_term(word: str) -> Term | None:
         "i": TermType.LOOP_CNT,
         "or": TermType.OR,
     }.get(word)
+
 
 def write_code(filename: str, code: list[dict]):
     with open(filename, "w", encoding="utf-8") as file:
