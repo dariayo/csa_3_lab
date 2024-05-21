@@ -90,7 +90,7 @@ class ALU:
         self.src_b = None
         self.operation = None
 
-    def alu_op(self) -> None: # noqa: C901 -- function is too complex
+    def alu_op(self) -> None:  # noqa: C901 -- function is too complex
         if self.operation == ALUOpcode.INC_A:
             self.result = self.src_a + 1
         elif self.operation == ALUOpcode.INC_B:
@@ -317,7 +317,7 @@ class ControlUnit:
         self.check_for_interrupts()
         self.signal_latch_pc(Selector.PC_INC)
 
-    def decode_execute(self) -> None: # noqa: C901 -- function is too complex
+    def decode_execute(self) -> None:  # noqa: C901 -- function is too complex
         memory_cell = self.program_memory[self.data_path.pc]
         command = memory_cell["command"]
         arithmetic_operation = opcode_to_alu_opcode(command)
