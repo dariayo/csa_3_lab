@@ -3,7 +3,7 @@ from __future__ import annotations
 import shlex
 import sys
 
-from isa import Opcode, OpcodeParam, OpcodeParamType, OpcodeType, TermType, write_code, word_to_term
+from isa import Opcode, OpcodeParam, OpcodeParamType, OpcodeType, TermType, word_to_term, write_code
 
 
 class Term:

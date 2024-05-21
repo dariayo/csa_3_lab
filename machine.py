@@ -475,14 +475,15 @@ class ControlUnit:
             raise StopIteration
 
     def __print__(self, comment: str) -> None:
-        tos_memory = self.data_path.data_stack[self.data_path.sp - 1: self.data_path.sp - 4: -1]
+        tos_memory = self.data_path.data_stack[self.data_path.sp - 1 : self.data_path.sp - 4 : -1]
         tos = [self.data_path.top_of_stack, self.data_path.next, *tos_memory]
-        ret_tos = self.data_path.return_stack[self.data_path.i - 1: self.data_path.i - 4: -1]
+        ret_tos = self.data_path.return_stack[self.data_path.i - 1 : self.data_path.i - 4 : -1]
         state_repr = (
-            "TICK: {:4} | PC: {:3} | PS_REQ {:1} | PS_STATE: {:1} | SP: {:3} | I: {:3} | "
+            "TICK: {:4} {}| PC: {:3} | PS_REQ {:1} | PS_STATE: {:1} | SP: {:3} | I: {:3} | "
             "MEDIUM: {:7} | DATA_MEMORY[TOP] {:7} | TOS : {} | RETURN_TOS : {}"
         ).format(
             self.tick_number,
+            self.program_memory[self.data_path.pc]["command"],
             self.data_path.pc,
             self.ps["Intr_Req"],
             self.ps["Intr_On"],
