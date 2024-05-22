@@ -16,18 +16,18 @@ class Term:
 
 
 variables = {}
-variable_current_address = 512
-string_current_address = 0
+variable_address = 512
+string_address = 0
 functions = {}
 
 
 def split_to_terms(source_code: str) -> list[Term]:
-    code_words = shlex.split(source_code.replace("\n", " "), posix=True)
-    code_words = list(filter(lambda x: len(x) > 0, code_words))
+    words = shlex.split(source_code.replace("\n", " "), posix=True)
+    words = [word for word in words if len(word) > 0]
     terms = [Term(0, TermType.ENTRYPOINT, "")]
-    for word_number, word in enumerate(code_words):
+    for word_number, word in enumerate(words):
         term_type = word_to_term(word)
-        if word[:2] == ". ":
+        if word.startswith(". "):
             word = f'."{word[2:]}"'
             term_type = TermType.STRING
         terms.append(Term(word_number + 1, term_type, word))
@@ -35,37 +35,37 @@ def split_to_terms(source_code: str) -> list[Term]:
 
 
 def validate_indexes(terms: list[Term], begin: TermType, end: TermType, error: str) -> None:
-    begin_indexes = []
-    for term_index, term in enumerate(terms):
-        if term.term_type is begin:
-            begin_indexes.append(term_index)
+    start_indexes = []
+    for idx, term in enumerate(terms):
+        if term.term_type == begin:
+            start_indexes.append(idx)
         if term.term_type == end:
-            assert len(begin_indexes) > 0, error + " в слове #" + str(term.word_number)
-            term.operand = begin_indexes.pop()
-    assert len(begin_indexes) == 0, error
+            assert start_indexes, f"{error} в слове #{term.word_number}"
+            term.operand = start_indexes.pop()
+    assert not start_indexes, error
 
 
-def set_functions(terms: list[Term]) -> None:
+def assign_functions(terms: list[Term]) -> None:
     global functions
-    func_indexes = []
-    for term_index, term in enumerate(terms):
-        if term.term_type is TermType.DEF or term.term_type is TermType.DEF_INTR:
-            assert term_index + 1 < len(terms), "Пропущено имя функции" + str(term.word_number)
-            assert len(func_indexes) == 0, "Незакрытая функция в слове #" + str(term.word_number)
-            assert term.word not in functions, "Повторяющаяся функция в слове #" + str(term.word_number)
-            func_indexes.append(term.word_number)
-            func_name = terms[term_index + 1].word
+    func_indices = []
+    for idx, term in enumerate(terms):
+        if term.term_type in {TermType.DEF, TermType.DEF_INTR}:
+            assert idx + 1 < len(terms), f"Пропущено имя функции в слове #{term.word_number}"
+            assert not func_indices, f"Незакрытая функция в слове #{term.word_number}"
+            assert term.word not in functions, f"Повторяющаяся функция в слове #{term.word_number}"
+            func_indices.append(term.word_number)
+            func_name = terms[idx + 1].word
             functions[func_name] = term.word_number + 1
-            terms[term_index + 1].converted = True
+            terms[idx + 1].converted = True
         if term.term_type == TermType.RET:
-            assert len(func_indexes) >= 1, "RET не в функции в слове #" + str(term.word_number)
-            function_term = terms[func_indexes.pop()]
+            assert func_indices, f"RET не в функции в слове #{term.word_number}"
+            function_term = terms[func_indices.pop()]
             function_term.operand = term.word_number + 1
-    assert len(func_indexes) == 0, "Незакрытая функция"
+    assert not func_indices, "Незакрытая функция"
 
 
-def set_variables(terms: list[Term]) -> None:
-    global variable_current_address
+def assign_variables(terms: list[Term]) -> None:
+    global variable_address
     for term_index, term in enumerate(terms):
         # variable <name> [<size> allot]
         if term.term_type is TermType.VARIABLE:
@@ -79,15 +79,15 @@ def set_variables(terms: list[Term]) -> None:
             assert terms[term_index + 1] not in variables, " Переменная уже существует в слове #" + str(
                 term.word_number + 1
             )
-            variables[terms[term_index + 1].word] = variable_current_address
-            variable_current_address += 1
+            variables[terms[term_index + 1].word] = variable_address
+            variable_address += 1
             terms[term_index + 1].converted = True
             if term_index + 3 < len(terms) and terms[term_index + 3].term_type is TermType.ALLOT:
-                set_allot_for_variable(terms, term_index + 3)
+                allot_variable_memory(terms, term_index + 3)
 
 
-def set_allot_for_variable(terms: list[Term], term_index: int) -> None:
-    global variable_current_address
+def allot_variable_memory(terms: list[Term], term_index: int) -> None:
+    global variable_address
     assert term_index + 3 < len(terms), "Неверное объявление выделения"
     term = terms[term_index]
     if term.term_type is TermType.ALLOT:
@@ -96,12 +96,12 @@ def set_allot_for_variable(terms: list[Term], term_index: int) -> None:
         try:
             allot_size = int(terms[term_index - 1].word)
             assert 1 <= allot_size <= 100, "Неверный размер выделения в слове #" + str(term.word_number - 1)
-            variable_current_address += allot_size
+            variable_address += allot_size
         except ValueError:
             assert True, "Неверный размер выделения в слове #" + str(term.word_number - 1)
 
 
-def set_if_else_then(terms: list[Term]) -> None:
+def check_if_else_then(terms: list[Term]) -> None:
     nested_ifs = []
     for term_index, term in enumerate(terms):
         if term.term_type is TermType.IF:
@@ -136,55 +136,56 @@ def replace_vars_funcs(terms: list[Term]) -> None:
                 term.word = "call"
 
 
-def validate_and_fix_terms(terms: list[Term]) -> None:
+def validate_and_correct_terms(terms: list[Term]) -> None:
     validate_indexes(terms, TermType.DO, TermType.LOOP, "Несбалансированный do ... loop")
     validate_indexes(terms, TermType.BEGIN, TermType.UNTIL, "Несбалансированный begin ... until")
-    set_functions(terms)
-    set_variables(terms)
+    assign_functions(terms)
+    assign_variables(terms)
     replace_vars_funcs(terms)
-    set_if_else_then(terms)
+    check_if_else_then(terms)
 
 
 def fix_literal(term: Term) -> list[Opcode]:
-    global string_current_address
+    global string_address
     if term.converted:
-        opcodes = []
-    elif term.term_type is not TermType.STRING:
-        opcodes = [Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, term.word)])]
-    else:
-        opcodes = []
-        content = term.word[2:-1]  # ." <content>"
-        string_start = string_current_address
+        return []
+    if term.term_type != TermType.STRING:
+        return [Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, term.word)])]
 
-        opcodes.append(Opcode(OpcodeType.POP, []))
-        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, len(content))]))
-        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_current_address)]))
+    opcodes = []
+    content = term.word[2:-1]
+    string_start = string_address
+
+    opcodes.append(Opcode(OpcodeType.POP, []))
+    opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, len(content))]))
+    opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_address)]))
+    opcodes.append(Opcode(OpcodeType.STORE, []))
+    string_address += 1
+
+    for char in content:
+        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, ord(char))]))
+        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_address)]))
         opcodes.append(Opcode(OpcodeType.STORE, []))
-        string_current_address += 1
-        for char in content:
-            opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, ord(char))]))
-            opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_current_address)]))
-            opcodes.append(Opcode(OpcodeType.STORE, []))
-            string_current_address += 1
+        string_address += 1
 
-        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_start)]))
-        opcodes.append(Opcode(OpcodeType.LOAD, []))
-        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_start)]))
-        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, 1)]))
-        opcodes.append(Opcode(OpcodeType.ADD, []))
-        opcodes.append(Opcode(OpcodeType.OVER, []))
-        opcodes.append(Opcode(OpcodeType.ZJMP, [OpcodeParam(OpcodeParamType.ADDR_REL, 12)]))
-        opcodes.append(Opcode(OpcodeType.DUP, []))
-        opcodes.append(Opcode(OpcodeType.LOAD, []))
-        opcodes.append(Opcode(OpcodeType.RPOP, []))
-        opcodes.append(Opcode(OpcodeType.DUP, []))
-        opcodes.append(Opcode(OpcodeType.POP, []))
-        opcodes.append(Opcode(OpcodeType.OMIT, []))
-        opcodes.append(Opcode(OpcodeType.SWAP, []))
-        opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, 1)]))
-        opcodes.append(Opcode(OpcodeType.SUB, []))
-        opcodes.append(Opcode(OpcodeType.SWAP, []))
-        opcodes.append(Opcode(OpcodeType.JMP, [OpcodeParam(OpcodeParamType.ADDR_REL, -14)]))
+    opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_start)]))
+    opcodes.append(Opcode(OpcodeType.LOAD, []))
+    opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, string_start)]))
+    opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, 1)]))
+    opcodes.append(Opcode(OpcodeType.ADD, []))
+    opcodes.append(Opcode(OpcodeType.OVER, []))
+    opcodes.append(Opcode(OpcodeType.ZJMP, [OpcodeParam(OpcodeParamType.ADDR_REL, 12)]))
+    opcodes.append(Opcode(OpcodeType.DUP, []))
+    opcodes.append(Opcode(OpcodeType.LOAD, []))
+    opcodes.append(Opcode(OpcodeType.RPOP, []))
+    opcodes.append(Opcode(OpcodeType.DUP, []))
+    opcodes.append(Opcode(OpcodeType.POP, []))
+    opcodes.append(Opcode(OpcodeType.OMIT, []))
+    opcodes.append(Opcode(OpcodeType.SWAP, []))
+    opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, 1)]))
+    opcodes.append(Opcode(OpcodeType.SUB, []))
+    opcodes.append(Opcode(OpcodeType.SWAP, []))
+    opcodes.append(Opcode(OpcodeType.JMP, [OpcodeParam(OpcodeParamType.ADDR_REL, -14)]))
 
     return opcodes
 
@@ -320,7 +321,7 @@ def terms_to_opcodes(terms: list[Term]) -> list[Opcode]:
 
 def translate(source_code: str) -> list[dict]:
     terms = split_to_terms(source_code)
-    validate_and_fix_terms(terms)
+    validate_and_correct_terms(terms)
     opcodes = terms_to_opcodes(terms)
     commands = []
     for index, opcode in enumerate(opcodes):
@@ -335,11 +336,11 @@ def translate(source_code: str) -> list[dict]:
 
 
 def main(source_file: str, target_file: str) -> None:
-    global variables, variable_current_address, string_current_address, functions
+    global variables, variable_address, string_address, functions
 
     variables = {}
-    variable_current_address = 512
-    string_current_address = 0
+    variable_address = 512
+    string_address = 0
     functions = {}
 
     with open(source_file, encoding="utf-8") as f:
