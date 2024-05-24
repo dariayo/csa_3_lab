@@ -31,10 +31,12 @@
 ```
 
 Код выполняется последовательно, кроме процедур
+
 Вызов процедуры осуществляется по имени
+
 Комментарии в программе отсутствуют
 
-Основные стековые операции в формате stack_before >> stack_after:
+Стековые операции (состояние стека до >> состояние стека после)
 
 * ```-``` - (n1 n2 >> n1 - n2)
 * ```+``` - (n1 n2 >> n1 + n2)
@@ -65,8 +67,7 @@
 Истинное значение это любое число != 0. Ложное значение 0.
 
 Команда ```do loop``` выполняет цикл, количество итераций которого определяется двумя значениями на вершине стека (n1 и
-n2).
-Итерации выполняются от n2 до n1, и в каждой итерации можно использовать переменную i, которая равна n2 плюс номер
+n2). Итерации выполняются от n2 до n1 и в каждой итерации можно использовать переменную i, которая равна n2 плюс номер
 текущей итерации.
 Аналогично ```for (i = n2; i < n1; i++) {}```
 
@@ -84,7 +85,7 @@ n2).
 
 ## Организация памяти
 
-* Память данных и команд раздельна
+* Память данных и команд раздельна (harv)
 * Размер машинного слова данных 32 бита
 * Машинное слово команд имеет длину 40 бит, из которых первые 8 бит используются для указания типа команды (размер
   условен, кодирование в виде json)
@@ -216,7 +217,7 @@ n2).
 
 Основные элементы используемые в процессе трансляции:
 
-* слово - исходное слово в тексте программы (разделены пробелами)
+* слово - исходное слово в тексте программы
 * терм - слово программы, преобразованное в формат машинной команды (слово != терм только для литералов)
 * машинное слово - машинная команда
 
@@ -230,15 +231,15 @@ n2).
 
 Программа на языке Forth должна удовлетворять условиям
 
-* терму `DO` должен соответствовать последующий терм `LOOP`
-* терму `BEGIN` должен соответствовать последующий терм `UNTIL`
-* терму `IF` должен соответствовать последующий терм `THEN`, между ними может располагаться терм `ELSE`
-* терму `:` должен соответствовать последующий терм `;`
-* терму `:intr` должен соответствовать последующий терм `;`
+* терму `DO` должен соответствовать терм `LOOP`
+* терму `BEGIN` должен соответствовать терм `UNTIL`
+* терму `IF` должен соответствовать терм `THEN`, между ними может быть терм `ELSE`
+* терму `:` должен соответствовать терм `;`
+* терму `:intr` должен соответствовать терм `;`
 * объявление переменной должно иметь вид `variable <name> [allot <int>]`
 
-На данном этапе проводится валидация термов, оповещение пользователя в случае неуспешной трансляции с указанием ошибки и
-номера слова, в котором ошибка
+На данном этапе проводится валидация термов, оповещение пользователя в случае проваленной трансляции с указанием ошибки
+и номера слова, в котором ошибка
 
 Реализуется функцией [translator.py:validate_and_correct_terms](translator.py#L139).
 
@@ -277,12 +278,9 @@ n2).
 литералов, которые в языке Forth применяются для вывода на внешние устройства. Строковый литерал вида `." string"`
 преобразуется в последовательность команд, которые выполняют следующие действия:
 
-* Запись в память данных размера строки (prefix-strings)
+* Запись в память данных размера строки (pstr)
 * Посимвольная запись содержимого строки в память данных
 * Цикл, который выводит строку
-
-Эту последовательность команд можно сократить до одной команды вывода строки, но в данном случае она представлена в
-таком виде из-за формальных требований к лабораторной работе, касающихся хранения строк в памяти.
 
 ## Модель процессора
 
@@ -290,7 +288,7 @@ n2).
 
 Реализовано в модуле: [machine.py](machine.py).
 
-Stack Controller:
+Stack:
 ![TOS](schemes/stack.png)
 
 DataPath:
@@ -301,7 +299,7 @@ ControlUnit:
 
 DataPath реализован в [machine.py:DataPath](machine.py#L121)
 
-Stack Controller является частью DataPath, включен в
+Stack является частью DataPath, включен в
 класс [machine.py:DataPath](machine.py#L121)
 
 ControlUnit реализован в [machine.py:ControlUnit](machine.py#L245)
@@ -316,7 +314,7 @@ ControlUnit реализован в [machine.py:ControlUnit](machine.py#L245)
 В модели процессора есть регистры:
 
 * `SP` - stack pointer
-* `I` - адрес верхушки стека возврата(в качестве буфера для верхнего элемента стека возвратов)
+* `I` - адрес верхушки стека возврата (в качестве буфера для верхнего элемента стека возвратов)
 * `PC` - program counter
 * `PS` - program state, 2 бита: разрешены ли прерывания, есть ли запрос на прерывания
 * `TOP` - значение верхушки стека
@@ -336,7 +334,7 @@ ControlUnit реализован в [machine.py:ControlUnit](machine.py#L245)
 | pop                            | `MEDIUM = TOP`; `TOP = NEXT`; `NEXT = MEM; SP -= 1`; `RETURN_STACK = MEDIUM; I += 1`  | 4                 |
 | rpop                           | `MEDIUM = RETURN_STACK; I -= 1`; `MEM = NEXT; SP += 1`; `NEXT = TOP;`; `TOP = MEDIUM` | 4                 |
 | jmp                            | `PC = IMMEDIATE`                                                                      | 1                 |
-| zjmp                           | `PC = IMM; TOP = NEXT`; `NEXT = MEM; SP -= 1`                                         | 2                 |
+| zjmp                           | `PC = IMMEDIATE; TOP = NEXT`; `NEXT = MEM; SP -= 1`                                   | 2                 |
 | call                           | `MEM = PC + 1; SP += 1;`; `PC = IMMEDIATE`                                            | 2                 |
 | ret                            | `PC = RETURN_STACK; I -= 1`                                                           | 1                 |
 
@@ -428,8 +426,6 @@ jobs:
 Пример использования и журнал работы процессора на примере cat:
 
 ```text
-$ cat examples/input/input.txt
-Hello
 $ python translator.py examples/forth/cat.fth target.out
 source LoC: 10 code instr: 21
 $ cat target.out
@@ -455,33 +451,33 @@ $ cat target.out
  {"index": 19, "command": "zjmp", "arg": 17},
  {"index": 20, "command": "halt"}]
 $ python machine.py examples/machine/cat.json examples/input/cat.txt
-TICK:    1 ret| PC:  13 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    2 push| PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    3 push| PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    4 push| PC:  14 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    5 push| PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    6 push| PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    7 push| PC:  15 | PS_REQ 0 | PS_STATE: 1 | SP:   6 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [512, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    8 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 0, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:    9 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   10 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   11 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   12 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   13 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   14 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   15 load| PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   16 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   17 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   18 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   19 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   20 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   21 load| PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   22 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   23 store| PC:  16 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   24 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   25 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [8877, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   26 push| PC:  17 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]       0 | TOS : [512, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
-TICK:   27 load| PC:  18 | PS_REQ 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]    4747 | TOS : [0, 8877, 8877, 8877, 8877] | RETURN_TOS : [9988, 9988, 9988] 
+TICK:    1 | COMMAND: ret   | PC:  13 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    2 | COMMAND: push  | PC:  14 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    3 | COMMAND: push  | PC:  14 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    4 | COMMAND: push  | PC:  14 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [0, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    5 | COMMAND: push  | PC:  15 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [0, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    6 | COMMAND: push  | PC:  15 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [0, 0, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    7 | COMMAND: push  | PC:  15 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [512, 0, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    8 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:       0 | TOS: [512, 0, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:    9 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:       0 | TOS: [512, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   10 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   11 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   12 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   13 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   14 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:       0 | TOS: [512, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   15 | COMMAND: load  | PC:  18 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [0, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   16 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   17 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   18 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   19 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   20 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:       0 | TOS: [512, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   21 | COMMAND: load  | PC:  18 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [0, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   22 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   23 | COMMAND: store | PC:  16 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   24 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   4 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   25 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [8877, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   26 | COMMAND: push  | PC:  17 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:       0 | TOS: [512, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
+TICK:   27 | COMMAND: load  | PC:  18 | PS_REQ: 0 | PS_STATE: 1 | SP:   5 | I:   4 | MEDIUM:    8877 | DATA_MEMORY[TOP]:    4747 | TOS: [0, 8877, 8877, 8877, 8877] | RETURN_TOS: [9988, 9988, 9988] 
 Output: hello
 
 Instructions: 200
@@ -516,7 +512,7 @@ TOTAL                   671     26    96%
 ```
 
 ```text
-| ФИО                            | алг       | LoC  | code байт| code инстр. | инстр. | такт.   | вариант                                                                         |
+| ФИО                            | алг       | LoC  | code байт| code инстр. | инстр. | такт.   | вариант                                                                |
 | Шевченко Дарья Павловна        | hello_user| 20   | -        | 218         | 1471   | 3250    | forth | stack | harv | hw | tick | struct | trap | port | pstr | prob1 | 
 | Шевченко Дарья Павловна        | cat       | 8    | -        | 21          | 200    | 464     | forth | stack | harv | hw | tick | struct | trap | port | pstr | prob1 |
 | Шевченко Дарья Павловна        | hello     | 1    | -        | 58          | 212    | 631     | forth | stack | harv | hw | tick | struct | trap | port | pstr | prob1 |
