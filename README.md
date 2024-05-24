@@ -289,13 +289,13 @@ n2). Итерации выполняются от n2 до n1 и в каждой 
 Реализовано в модуле: [machine.py](machine.py).
 
 Stack:
-![TOS](schemes/stack.png)
+![TOS](schemes/stack.jpg)
 
 DataPath:
-![DataPath](schemes/datapath.png)
+![DataPath](schemes/datapath.jpg)
 
 ControlUnit:
-![ControlUnit](schemes/controlunit.png)
+![ControlUnit](schemes/controlunit.jpg)
 
 DataPath реализован в [machine.py:DataPath](machine.py#L121)
 
