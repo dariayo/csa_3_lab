@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 import sys
 import typing
@@ -313,6 +311,173 @@ class ControlUnit:
         self.tick([lambda: self.data_path.signal_latch_sp(Selector.SP_DEC)])
         self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
 
+    def push(self, memory_cell: dict):
+        self.tick([lambda: self.data_path.signal_data_wr()])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_IMMEDIATE, memory_cell["arg"])])
+
+    def drop(self):
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+
+    def omit(self):
+        if chr(self.data_path.next) == "⊭":
+            self.data_path.out_buffer += str(self.data_path.top_of_stack)
+        else:
+            self.data_path.out_buffer += chr(self.data_path.next)
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+
+    def read(self):
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_data_wr()])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_IMMEDIATE, ord(self.IO))])
+
+    def swap(self):
+        self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
+        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
+
+    def over(self):
+        self.tick([lambda: self.data_path.signal_data_wr()])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
+
+    def dup(self):
+        self.tick([lambda: self.data_path.signal_data_wr()])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+            ]
+        )
+
+    def load(self):
+        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_MEM)])
+
+    def store(self):
+        self.tick([lambda: self.data_path.signal_mem_write(), lambda: self.data_path.signal_latch_sp(Selector.SP_DEC)])
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+
+    def pop(self):
+        self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+            ]
+        )
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM),
+                lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_OUT),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_i(Selector.I_INC)])
+
+    def rpop(self):
+        self.tick([lambda: self.data_path.signal_latch_i(Selector.I_DEC)])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_RETURN),
+                lambda: self.data_path.signal_data_wr(),
+            ]
+        )
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
+                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+            ]
+        )
+        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_MEDIUM)])
+
+    def zjmp(self, memory_cell: dict):
+        if self.data_path.top_of_stack == 0:
+            self.tick(
+                [
+                    lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"]),
+                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                ]
+            )
+            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        else:
+            self.tick(
+                [
+                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
+                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                ]
+            )
+            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+
+    def jmp(self, memory_cell: dict):
+        self.tick([lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"])])
+
+    def call(self, memory_cell: dict):
+        self.tick([lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_PC)])
+        self.tick(
+            [
+                lambda: self.data_path.signal_latch_i(Selector.I_INC),
+                lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"]),
+            ]
+        )
+
+    def ret(self):
+        self.tick([lambda: self.data_path.signal_latch_i(Selector.I_DEC)])
+        self.tick([lambda: self.signal_latch_pc(Selector.PC_RET)])
+
+    def di(self):
+        self.tick([lambda: self.signal_latch_ps(False)])
+
+    def ei(self):
+        self.tick([lambda: self.signal_latch_ps(True)])
+
     def decode_execute(self) -> None:  # noqa: C901 -- function is too complex
         memory_cell = self.program_memory[self.data_path.pc]
         command = memory_cell["command"]
@@ -320,157 +485,39 @@ class ControlUnit:
         if arithmetic_operation:
             self.arithmetic(arithmetic_operation)
         elif command == OpcodeType.PUSH:
-            self.tick([lambda: self.data_path.signal_data_wr()])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
-                    lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_IMMEDIATE, memory_cell["arg"])])
+            self.push(memory_cell)
         elif command == OpcodeType.DROP:
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+            self.drop()
         elif command == OpcodeType.OMIT:
-            if chr(self.data_path.next) == "⊭":
-                self.data_path.out_buffer += str(self.data_path.top_of_stack)
-            else:
-                self.data_path.out_buffer += chr(self.data_path.next)
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+            self.omit()
         elif command == OpcodeType.READ:
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_data_wr()])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
-                    lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_IMMEDIATE, ord(self.IO))])
+            self.read()
         elif command == OpcodeType.SWAP:
-            self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
+            self.swap()
         elif command == OpcodeType.OVER:
-            self.tick([lambda: self.data_path.signal_data_wr()])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
+            self.over()
         elif command == OpcodeType.DUP:
-            self.tick([lambda: self.data_path.signal_data_wr()])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
-                ]
-            )
+            self.dup()
         elif command == OpcodeType.LOAD:
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_MEM)])
+            self.load()
         elif command == OpcodeType.STORE:
-            self.tick(
-                [lambda: self.data_path.signal_mem_write(), lambda: self.data_path.signal_latch_sp(Selector.SP_DEC)]
-            )
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+            self.store()
         elif command == OpcodeType.POP:
-            self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                ]
-            )
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM),
-                    lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_OUT),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_i(Selector.I_INC)])
+            self.pop()
         elif command == OpcodeType.RPOP:
-            self.tick([lambda: self.data_path.signal_latch_i(Selector.I_DEC)])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_RETURN),
-                    lambda: self.data_path.signal_data_wr(),
-                ]
-            )
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
-                ]
-            )
-            self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_MEDIUM)])
+            self.rpop()
         elif command == OpcodeType.ZJMP:
-            if self.data_path.top_of_stack == 0:
-                self.tick(
-                    [
-                        lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"]),
-                        lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                        lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                    ]
-                )
-                self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
-            else:
-                self.tick(
-                    [
-                        lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                        lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
-                    ]
-                )
-                self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+            self.zjmp(memory_cell)
         elif command == OpcodeType.JMP:
-            self.tick([lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"])])
+            self.jmp(memory_cell)
         elif command == OpcodeType.CALL:
-            self.tick([lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_PC)])
-            self.tick(
-                [
-                    lambda: self.data_path.signal_latch_i(Selector.I_INC),
-                    lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"]),
-                ]
-            )
+            self.call(memory_cell)
         elif command == OpcodeType.DI:
-            self.tick([lambda: self.signal_latch_ps(False)])
+            self.di()
         elif command == OpcodeType.EI:
-            self.tick([lambda: self.signal_latch_ps(True)])
+            self.ei()
         elif command == OpcodeType.RET:
-            self.tick([lambda: self.data_path.signal_latch_i(Selector.I_DEC)])
-            self.tick([lambda: self.signal_latch_pc(Selector.PC_RET)])
+            self.ret()
         elif command == OpcodeType.HALT:
             raise StopIteration
 
