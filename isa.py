@@ -1,7 +1,7 @@
+from __future__ import annotations
+
 import json
 from enum import Enum
-
-from translator import Term
 
 
 class OpcodeParamType(str, Enum):
@@ -94,42 +94,6 @@ class TermType(Enum):
         STRING,
         ENTRYPOINT,
     ) = range(34)
-
-
-def word_to_term(word: str) -> Term | None:
-    return {
-        "di": TermType.DI,
-        "ei": TermType.EI,
-        "dup": TermType.DUP,
-        "+": TermType.ADD,
-        "-": TermType.SUB,
-        "/": TermType.DIV,
-        "mod": TermType.MOD,
-        "omit": TermType.OMIT,
-        "read": TermType.READ,
-        "swap": TermType.SWAP,
-        "drop": TermType.DROP,
-        "over": TermType.OVER,
-        "=": TermType.EQ,
-        "<": TermType.LS,
-        "variable": TermType.VARIABLE,
-        "allot": TermType.ALLOT,
-        "!": TermType.STORE,
-        "@": TermType.LOAD,
-        "if": TermType.IF,
-        "else": TermType.ELSE,
-        "then": TermType.THEN,
-        ".": TermType.OMIT,
-        ":": TermType.DEF,
-        ";": TermType.RET,
-        ":intr": TermType.DEF_INTR,
-        "do": TermType.DO,
-        "loop": TermType.LOOP,
-        "begin": TermType.BEGIN,
-        "until": TermType.UNTIL,
-        "i": TermType.LOOP_CNT,
-        "or": TermType.OR,
-    }.get(word)
 
 
 def write_code(filename: str, code: list[dict]):
