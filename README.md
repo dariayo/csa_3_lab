@@ -22,9 +22,10 @@
 <begin until operator> → begin <program> until  
 
 <word> →   <integer literal> | <mathematical operator> | <string display> | <procedure name> |
-            "mod" | "drop" | "swap" | "over" | "dup" | "read" | "omit" | <variable> | "@" | "!" | "ei" | "di" | "or" 
+            "mod" | "drop" | "swap" | "over" | "dup" | "read" | "omit" | <variable> | "@" 
+            | "!" | "ei" | "di" | "or" 
 
-<mathematical operator> → "+" | "-" | "*" | "/" | "=" | "<" | ">" 
+<mathematical operator> → "+" | "-" | "/" | "=" | ">" 
 
 <string display> → "." <string literal>
 
