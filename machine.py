@@ -196,8 +196,6 @@ class DataPath:
             self.top_of_stack = self.next
         elif selector is Selector.TOP_MEDIUM:
             self.top_of_stack = self.medium
-        elif selector is Selector.TOP_INPUT:
-            self.top_of_stack = 47474747
         elif selector is Selector.TOP_ALU:
             self.top_of_stack = self.alu.result
         elif selector is Selector.TOP_MEM:
