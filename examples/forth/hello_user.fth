@@ -16,5 +16,5 @@ variable str_len
 11 ." enter your name: "
 begin stop_input @ until
 11 ." hello, "
-str_len @ 0 do str_buff i + @ 11 omit loop
+str_len @ 0 do str_buff i + @ 11 emit loop
 11 ." !!!"

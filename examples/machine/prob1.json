@@ -62,5 +62,5 @@
   {"index": 61, "command": "ei"},
   {"index": 62, "command": "ret"},
   {"index": 63, "command": "call", "arg": 2},
-  {"index": 64, "command": "omit"},
+  {"index": 64, "command": "emit"},
   {"index": 65, "command": "halt"}]

@@ -54,7 +54,7 @@ out_code: |-
    {"index": 48, "command": "rpop"},
    {"index": 49, "command": "dup"},
    {"index": 50, "command": "pop"},
-   {"index": 51, "command": "omit"},
+   {"index": 51, "command": "emit"},
    {"index": 52, "command": "swap"},
    {"index": 53, "command": "push", "arg": 1},
    {"index": 54, "command": "sub"},
@@ -229,10 +229,10 @@ out_log: |
   INFO    machine:__print__     TICK:  159 | COMMAND: pop   | PC:  50 | PS_REQ: 0 | PS_STATE: 1 | SP:   8 | I:   4 | MEDIUM:      11 | DATA_MEMORY[TOP]:     100 | TOS: [11, 11, 1, 11, 8877] | RETURN_TOS: [9988, 9988, 9988] 
   INFO    machine:__print__     TICK:  160 | COMMAND: pop   | PC:  50 | PS_REQ: 0 | PS_STATE: 1 | SP:   8 | I:   4 | MEDIUM:      11 | DATA_MEMORY[TOP]:     100 | TOS: [11, 104, 1, 11, 8877] | RETURN_TOS: [9988, 9988, 9988] 
   INFO    machine:__print__     TICK:  161 | COMMAND: pop   | PC:  50 | PS_REQ: 0 | PS_STATE: 1 | SP:   8 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:     100 | TOS: [11, 104, 1, 11, 8877] | RETURN_TOS: [11, 9988, 9988] 
-  INFO    machine:__print__     TICK:  162 | COMMAND: omit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   7 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:    4747 | TOS: [104, 104, 11, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
-  INFO    machine:__print__     TICK:  163 | COMMAND: omit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   7 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:    4747 | TOS: [104, 1, 11, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
-  INFO    machine:__print__     TICK:  164 | COMMAND: omit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:     104 | TOS: [1, 1, 8877, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
-  INFO    machine:__print__     TICK:  165 | COMMAND: omit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:     104 | TOS: [1, 11, 8877, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  162 | COMMAND: emit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   7 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:    4747 | TOS: [104, 104, 11, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  163 | COMMAND: emit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   7 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:    4747 | TOS: [104, 1, 11, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  164 | COMMAND: emit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:     104 | TOS: [1, 1, 8877, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
+  INFO    machine:__print__     TICK:  165 | COMMAND: emit  | PC:  51 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   5 | MEDIUM:      11 | DATA_MEMORY[TOP]:     104 | TOS: [1, 11, 8877, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
   INFO    machine:__print__     TICK:  166 | COMMAND: swap  | PC:  52 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   5 | MEDIUM:       1 | DATA_MEMORY[TOP]:     104 | TOS: [1, 11, 8877, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
   INFO    machine:__print__     TICK:  167 | COMMAND: swap  | PC:  52 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   5 | MEDIUM:       1 | DATA_MEMORY[TOP]:     100 | TOS: [11, 11, 8877, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 
   INFO    machine:__print__     TICK:  168 | COMMAND: swap  | PC:  52 | PS_REQ: 0 | PS_STATE: 1 | SP:   6 | I:   5 | MEDIUM:       1 | DATA_MEMORY[TOP]:     100 | TOS: [11, 1, 8877, 8877, 8877] | RETURN_TOS: [11, 9988, 9988] 

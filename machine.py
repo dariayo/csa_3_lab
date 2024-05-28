@@ -330,7 +330,7 @@ class ControlUnit:
         )
         self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
 
-    def omit(self):
+    def emit(self):
         if chr(self.data_path.next) == "⊭":
             self.data_path.out_buffer += str(self.data_path.top_of_stack)
         else:
@@ -488,8 +488,8 @@ class ControlUnit:
             self.push(memory_cell)
         elif command == OpcodeType.DROP:
             self.drop()
-        elif command == OpcodeType.OMIT:
-            self.omit()
+        elif command == OpcodeType.EMIT:
+            self.emit()
         elif command == OpcodeType.READ:
             self.read()
         elif command == OpcodeType.SWAP:

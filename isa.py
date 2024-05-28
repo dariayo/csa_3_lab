@@ -34,7 +34,7 @@ class OpcodeType(str, Enum):
     OR = "or"
     DI = "di"
     EI = "ei"
-    OMIT = "omit"
+    EMIT = "emit"
     READ = "read"
     STORE = "store"
     LOAD = "load"
@@ -66,7 +66,7 @@ class TermType(Enum):
         SUB,
         DIV,
         MOD,
-        OMIT,
+        EMIT,
         SWAP,
         DROP,
         OVER,

@@ -17,7 +17,7 @@ in_source: |-
   11 ." enter your name: "
   begin stop_input @ until
   11 ." hello, "
-    str_len @ 0 do str_buff i + @ 11 omit loop
+    str_len @ 0 do str_buff i + @ 11 emit loop
     11 ." !!!"
 
 in_stdin: |-
@@ -121,7 +121,7 @@ out_code: |-
    {"index": 95, "command": "rpop"},
    {"index": 96, "command": "dup"},
    {"index": 97, "command": "pop"},
-   {"index": 98, "command": "omit"},
+   {"index": 98, "command": "emit"},
    {"index": 99, "command": "swap"},
    {"index": 100, "command": "push", "arg": 1},
    {"index": 101, "command": "sub"},
@@ -168,7 +168,7 @@ out_code: |-
    {"index": 142, "command": "rpop"},
    {"index": 143, "command": "dup"},
    {"index": 144, "command": "pop"},
-   {"index": 145, "command": "omit"},
+   {"index": 145, "command": "emit"},
    {"index": 146, "command": "swap"},
    {"index": 147, "command": "push", "arg": 1},
    {"index": 148, "command": "sub"},
@@ -195,7 +195,7 @@ out_code: |-
    {"index": 169, "command": "add"},
    {"index": 170, "command": "load"},
    {"index": 171, "command": "push", "arg": 11},
-   {"index": 172, "command": "omit"},
+   {"index": 172, "command": "emit"},
    {"index": 173, "command": "di"},
    {"index": 174, "command": "rpop"},
    {"index": 175, "command": "rpop"},
@@ -234,7 +234,7 @@ out_code: |-
    {"index": 208, "command": "rpop"},
    {"index": 209, "command": "dup"},
    {"index": 210, "command": "pop"},
-   {"index": 211, "command": "omit"},
+   {"index": 211, "command": "emit"},
    {"index": 212, "command": "swap"},
    {"index": 213, "command": "push", "arg": 1},
    {"index": 214, "command": "sub"},

@@ -49,7 +49,7 @@
   {"index": 48, "command": "rpop"},
   {"index": 49, "command": "dup"},
   {"index": 50, "command": "pop"},
-  {"index": 51, "command": "omit"},
+  {"index": 51, "command": "emit"},
   {"index": 52, "command": "swap"},
   {"index": 53, "command": "push", "arg": 1},
   {"index": 54, "command": "sub"},

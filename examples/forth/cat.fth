@@ -1,7 +1,7 @@
 :intr intr_enter
     10 read
     dup 10 = if 1 stop_input ! then
-    11 omit
+    11 emit
 ei ;
 
 variable stop_input

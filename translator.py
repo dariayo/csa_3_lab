@@ -15,7 +15,7 @@ def word_to_term(word: str) -> Term | None:
         "-": TermType.SUB,
         "/": TermType.DIV,
         "mod": TermType.MOD,
-        "omit": TermType.OMIT,
+        "emit": TermType.EMIT,
         "read": TermType.READ,
         "swap": TermType.SWAP,
         "drop": TermType.DROP,
@@ -29,7 +29,7 @@ def word_to_term(word: str) -> Term | None:
         "if": TermType.IF,
         "else": TermType.ELSE,
         "then": TermType.THEN,
-        ".": TermType.OMIT,
+        ".": TermType.EMIT,
         ":": TermType.DEF,
         ";": TermType.RET,
         ":intr": TermType.DEF_INTR,
@@ -216,7 +216,7 @@ def fix_literal(term: Term) -> list[Opcode]:
     opcodes.append(Opcode(OpcodeType.RPOP, []))
     opcodes.append(Opcode(OpcodeType.DUP, []))
     opcodes.append(Opcode(OpcodeType.POP, []))
-    opcodes.append(Opcode(OpcodeType.OMIT, []))
+    opcodes.append(Opcode(OpcodeType.EMIT, []))
     opcodes.append(Opcode(OpcodeType.SWAP, []))
     opcodes.append(Opcode(OpcodeType.PUSH, [OpcodeParam(OpcodeParamType.CONST, 1)]))
     opcodes.append(Opcode(OpcodeType.SUB, []))
@@ -236,7 +236,7 @@ def term2opcodes(term: Term) -> list[Opcode]:
         TermType.SUB: [Opcode(OpcodeType.SUB, [])],
         TermType.DIV: [Opcode(OpcodeType.DIV, [])],
         TermType.MOD: [Opcode(OpcodeType.MOD, [])],
-        TermType.OMIT: [Opcode(OpcodeType.OMIT, [])],
+        TermType.EMIT: [Opcode(OpcodeType.EMIT, [])],
         TermType.SWAP: [Opcode(OpcodeType.SWAP, [])],
         TermType.DROP: [Opcode(OpcodeType.DROP, [])],
         TermType.OVER: [Opcode(OpcodeType.OVER, [])],

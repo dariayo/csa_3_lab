@@ -9,7 +9,7 @@
   {"index": 8, "command": "push", "arg": 512},
   {"index": 9, "command": "store"},
   {"index": 10, "command": "push", "arg": 11},
-  {"index": 11, "command": "omit"},
+  {"index": 11, "command": "emit"},
   {"index": 12, "command": "ei"},
   {"index": 13, "command": "ret"},
   {"index": 14, "command": "push", "arg": 0},
