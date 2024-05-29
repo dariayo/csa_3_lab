@@ -130,18 +130,18 @@ class DataPath:
         self.input_tokens = input_tokens
         self.tokens_handled = [False for _ in input_tokens]
         self.memory_size = memory_size
-        self.memory = [4747] * memory_size
+        self.memory = [2048] * memory_size
         self.data_stack_size = data_stack_size
-        self.data_stack = [8877] * data_stack_size
+        self.data_stack = [1024] * data_stack_size
         self.return_stack_size = return_stack_size
-        self.return_stack = [9988] * return_stack_size
+        self.return_stack = [1024] * return_stack_size
 
         self.sp = 4
         self.i = 4
         self.pc = 0
-        self.top_of_stack = 8877
-        self.next = 8877
-        self.medium = 8877
+        self.top_of_stack = 1024
+        self.next = 1024
+        self.medium = 1024
 
         self.alu = ALU()
 
@@ -315,7 +315,7 @@ class ControlUnit:
         self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
 
     def emit(self):
-        if chr(self.data_path.next) == "⊭":
+        if chr(self.data_path.next) == "Ѐ":
             self.data_path.out_buffer += str(self.data_path.top_of_stack)
         else:
             self.data_path.out_buffer += chr(self.data_path.next)
@@ -379,7 +379,9 @@ class ControlUnit:
         self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_MEM)])
 
     def store(self):
-        self.tick([lambda: self.data_path.signal_mem_write(), lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC)])
+        self.tick(
+            [lambda: self.data_path.signal_mem_write(), lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC)]
+        )
         self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
         self.tick(
             [
