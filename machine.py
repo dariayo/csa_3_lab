@@ -17,7 +17,7 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 
-class Selector(str, Enum):
+class MUX(str, Enum):
     SP_INC = "sp_inc"
     SP_DEC = "sp_dec"
     I_INC = "i_inc"
@@ -45,10 +45,6 @@ class Selector(str, Enum):
 
 
 class ALUOpcode(str, Enum):
-    INC_A = "inc_a"
-    DEC_A = "dec_a"
-    INC_B = "inc_b"
-    DEC_B = "dec_b"
     ADD = "add"
     SUB = "sub"
     DIV = "div"
@@ -63,10 +59,6 @@ class ALUOpcode(str, Enum):
 
 class ALU:
     alu_operations: typing.ClassVar[list[ALUOpcode]] = [
-        ALUOpcode.INC_A,
-        ALUOpcode.DEC_A,
-        ALUOpcode.INC_B,
-        ALUOpcode.DEC_B,
         ALUOpcode.ADD,
         ALUOpcode.SUB,
         ALUOpcode.DIV,
@@ -87,15 +79,7 @@ class ALU:
         self.operation = None
 
     def alu_op(self) -> None:  # noqa: C901 -- function is too complex
-        if self.operation == ALUOpcode.INC_A:
-            self.result = self.src_a + 1
-        elif self.operation == ALUOpcode.INC_B:
-            self.result = self.src_b + 1
-        elif self.operation == ALUOpcode.DEC_A:
-            self.result = self.src_a - 1
-        elif self.operation == ALUOpcode.DEC_B:
-            self.result = self.src_b - 1
-        elif self.operation == ALUOpcode.ADD:
+        if self.operation == ALUOpcode.ADD:
             self.result = self.src_a + self.src_b
         elif self.operation == ALUOpcode.DIV:
             self.result = self.src_b // self.src_a
@@ -161,48 +145,48 @@ class DataPath:
 
         self.alu = ALU()
 
-    def signal_latch_sp(self, selector: Selector) -> None:
-        if selector is Selector.SP_DEC:
+    def signal_latch_stack_pointer(self, mux: MUX) -> None:
+        if mux is MUX.SP_DEC:
             self.sp -= 1
-        elif selector is Selector.SP_INC:
+        elif mux is MUX.SP_INC:
             self.sp += 1
 
-    def signal_latch_i(self, selector: Selector) -> None:
-        if selector is Selector.I_DEC:
+    def signal_latch_i(self, mux: MUX) -> None:
+        if mux is MUX.I_DEC:
             self.i -= 1
-        elif selector is Selector.I_INC:
+        elif mux is MUX.I_INC:
             self.i += 1
 
-    def signal_latch_next(self, selector: Selector) -> None:
-        if selector is Selector.NEXT_MEM:
+    def signal_latch_next(self, mux: MUX) -> None:
+        if mux is MUX.NEXT_MEM:
             assert self.sp >= 0, "Адрес меньше 0"
             assert self.sp < self.data_stack_size, "Переполнение стека данных"
             self.next = self.data_stack[self.sp]
-        elif selector is Selector.NEXT_TOP:
+        elif mux is MUX.NEXT_TOP:
             self.next = self.top_of_stack
-        elif selector is Selector.NEXT_MEDIUM:
+        elif mux is MUX.NEXT_MEDIUM:
             self.next = self.medium
 
-    def signal_latch_medium(self, selector: Selector) -> None:
-        if selector is Selector.MEDIUM_RETURN:
+    def signal_latch_medium(self, mux: MUX) -> None:
+        if mux is MUX.MEDIUM_RETURN:
             assert self.i >= 0, "Адрес меньше 0"
             assert self.i < self.return_stack_size, "Переполнение стека возврата"
             self.medium = self.return_stack[self.i]
-        elif selector is Selector.MEDIUM_TOP:
+        elif mux is MUX.MEDIUM_TOP:
             self.medium = self.top_of_stack
-        elif selector is Selector.MEDIUM_NEXT:
+        elif mux is MUX.MEDIUM_NEXT:
             self.medium = self.next
 
-    def signal_latch_top(self, selector: Selector, immediate=0) -> None:
-        if selector is Selector.TOP_NEXT:
+    def signal_latch_top(self, mux: MUX, immediate=0) -> None:
+        if mux is MUX.TOP_NEXT:
             self.top_of_stack = self.next
-        elif selector is Selector.TOP_MEDIUM:
+        elif mux is MUX.TOP_MEDIUM:
             self.top_of_stack = self.medium
-        elif selector is Selector.TOP_ALU:
+        elif mux is MUX.TOP_ALU:
             self.top_of_stack = self.alu.result
-        elif selector is Selector.TOP_MEM:
+        elif mux is MUX.TOP_MEM:
             self.top_of_stack = self.memory[self.top_of_stack]
-        elif selector is Selector.TOP_IMMEDIATE:
+        elif mux is MUX.TOP_IMMEDIATE:
             self.top_of_stack = immediate
 
     def signal_data_wr(self) -> None:
@@ -210,12 +194,12 @@ class DataPath:
         assert self.sp < self.data_stack_size, "Переполнение стека данных"
         self.data_stack[self.sp] = self.next
 
-    def signal_ret_wr(self, selector: Selector) -> None:
+    def signal_ret_wr(self, mux: MUX) -> None:
         assert self.i >= 0, "Address below 0"
         assert self.i < self.return_stack_size, "Переполнение стека возврата"
-        if selector is Selector.RET_STACK_PC:
+        if mux is MUX.RET_STACK_PC:
             self.return_stack[self.i] = self.pc
-        elif selector is Selector.RET_STACK_OUT:
+        elif mux is MUX.RET_STACK_OUT:
             self.return_stack[self.i] = self.medium
 
     def signal_mem_write(self) -> None:
@@ -262,12 +246,12 @@ class ControlUnit:
             assert 0 <= mem_cell < self.program_memory_size, "Индекс программы выходит за размер памяти"
             self.program_memory[mem_cell] = opcode
 
-    def signal_latch_pc(self, selector: Selector, immediate=0) -> None:
-        if selector is Selector.PC_INC:
+    def signal_latch_pc(self, mux: MUX, immediate=0) -> None:
+        if mux is MUX.PC_INC:
             self.data_path.pc += 1
-        elif selector is Selector.PC_RET:
+        elif mux is MUX.PC_RET:
             self.data_path.pc = self.data_path.return_stack[self.data_path.i]
-        elif selector is Selector.PC_IMMEDIATE:
+        elif mux is MUX.PC_IMMEDIATE:
             self.data_path.pc = immediate - 1
 
     def signal_latch_ps(self, intr_on: bool) -> None:
@@ -282,11 +266,11 @@ class ControlUnit:
                     self.ps["Intr_Req"] = True
                     self.ps["Intr_On"] = False
                     self.data_path.tokens_handled[index] = True
-                    self.tick([lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_PC)])
+                    self.tick([lambda: self.data_path.signal_ret_wr(MUX.RET_STACK_PC)])
                     self.tick(
                         [
-                            lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, 1),
-                            lambda: self.data_path.signal_latch_i(Selector.I_INC),
+                            lambda: self.signal_latch_pc(MUX.PC_IMMEDIATE, 1),
+                            lambda: self.data_path.signal_latch_i(MUX.I_INC),
                         ]
                     )
                     break
@@ -303,32 +287,32 @@ class ControlUnit:
         self.instruction_number += 1
         self.decode_execute()
         self.find_interrupt()
-        self.signal_latch_pc(Selector.PC_INC)
+        self.signal_latch_pc(MUX.PC_INC)
 
     def arithmetic(self, arithmetic_operation):
         self.tick([lambda: self.data_path.signal_alu_operation(arithmetic_operation)])
-        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_ALU)])
-        self.tick([lambda: self.data_path.signal_latch_sp(Selector.SP_DEC)])
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_ALU)])
+        self.tick([lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
 
     def push(self, memory_cell: dict):
         self.tick([lambda: self.data_path.signal_data_wr()])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
-                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_INC),
+                lambda: self.data_path.signal_latch_next(MUX.NEXT_TOP),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_IMMEDIATE, memory_cell["arg"])])
+        self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_IMMEDIATE, memory_cell["arg"])])
 
     def drop(self):
         self.tick(
             [
-                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
 
     def emit(self):
         if chr(self.data_path.next) == "⊭":
@@ -337,140 +321,140 @@ class ControlUnit:
             self.data_path.out_buffer += chr(self.data_path.next)
         self.tick(
             [
-                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
 
     def read(self):
         self.tick(
             [
-                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
             ]
         )
         self.tick([lambda: self.data_path.signal_data_wr()])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
-                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_INC),
+                lambda: self.data_path.signal_latch_next(MUX.NEXT_TOP),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_IMMEDIATE, ord(self.IO))])
+        self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_IMMEDIATE, ord(self.IO))])
 
     def swap(self):
-        self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
-        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
+        self.tick([lambda: self.data_path.signal_latch_medium(MUX.MEDIUM_TOP)])
+        self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEDIUM)])
 
     def over(self):
         self.tick([lambda: self.data_path.signal_data_wr()])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+                lambda: self.data_path.signal_latch_medium(MUX.MEDIUM_TOP),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_INC),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT)])
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEDIUM)])
+        self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEDIUM)])
 
     def dup(self):
         self.tick([lambda: self.data_path.signal_data_wr()])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+                lambda: self.data_path.signal_latch_next(MUX.NEXT_TOP),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_INC),
             ]
         )
 
     def load(self):
-        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_MEM)])
+        self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_MEM)])
 
     def store(self):
-        self.tick([lambda: self.data_path.signal_mem_write(), lambda: self.data_path.signal_latch_sp(Selector.SP_DEC)])
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick([lambda: self.data_path.signal_mem_write(), lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+        self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
 
     def pop(self):
-        self.tick([lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_TOP)])
+        self.tick([lambda: self.data_path.signal_latch_medium(MUX.MEDIUM_TOP)])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
             ]
         )
         self.tick(
             [
-                lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM),
-                lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_OUT),
+                lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM),
+                lambda: self.data_path.signal_ret_wr(MUX.RET_STACK_OUT),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_i(Selector.I_INC)])
+        self.tick([lambda: self.data_path.signal_latch_i(MUX.I_INC)])
 
     def rpop(self):
-        self.tick([lambda: self.data_path.signal_latch_i(Selector.I_DEC)])
+        self.tick([lambda: self.data_path.signal_latch_i(MUX.I_DEC)])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_medium(Selector.MEDIUM_RETURN),
+                lambda: self.data_path.signal_latch_medium(MUX.MEDIUM_RETURN),
                 lambda: self.data_path.signal_data_wr(),
             ]
         )
         self.tick(
             [
-                lambda: self.data_path.signal_latch_next(Selector.NEXT_TOP),
-                lambda: self.data_path.signal_latch_sp(Selector.SP_INC),
+                lambda: self.data_path.signal_latch_next(MUX.NEXT_TOP),
+                lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_INC),
             ]
         )
-        self.tick([lambda: self.data_path.signal_latch_top(Selector.TOP_MEDIUM)])
+        self.tick([lambda: self.data_path.signal_latch_top(MUX.TOP_MEDIUM)])
 
     def zjmp(self, memory_cell: dict):
         if self.data_path.top_of_stack == 0:
             self.tick(
                 [
-                    lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"]),
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                    lambda: self.signal_latch_pc(MUX.PC_IMMEDIATE, memory_cell["arg"]),
+                    lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                    lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
                 ]
             )
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+            self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
         else:
             self.tick(
                 [
-                    lambda: self.data_path.signal_latch_top(Selector.TOP_NEXT),
-                    lambda: self.data_path.signal_latch_sp(Selector.SP_DEC),
+                    lambda: self.data_path.signal_latch_top(MUX.TOP_NEXT),
+                    lambda: self.data_path.signal_latch_stack_pointer(MUX.SP_DEC),
                 ]
             )
-            self.tick([lambda: self.data_path.signal_latch_next(Selector.NEXT_MEM)])
+            self.tick([lambda: self.data_path.signal_latch_next(MUX.NEXT_MEM)])
 
     def jmp(self, memory_cell: dict):
-        self.tick([lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"])])
+        self.tick([lambda: self.signal_latch_pc(MUX.PC_IMMEDIATE, memory_cell["arg"])])
 
     def call(self, memory_cell: dict):
-        self.tick([lambda: self.data_path.signal_ret_wr(Selector.RET_STACK_PC)])
+        self.tick([lambda: self.data_path.signal_ret_wr(MUX.RET_STACK_PC)])
         self.tick(
             [
-                lambda: self.data_path.signal_latch_i(Selector.I_INC),
-                lambda: self.signal_latch_pc(Selector.PC_IMMEDIATE, memory_cell["arg"]),
+                lambda: self.data_path.signal_latch_i(MUX.I_INC),
+                lambda: self.signal_latch_pc(MUX.PC_IMMEDIATE, memory_cell["arg"]),
             ]
         )
 
     def ret(self):
-        self.tick([lambda: self.data_path.signal_latch_i(Selector.I_DEC)])
-        self.tick([lambda: self.signal_latch_pc(Selector.PC_RET)])
+        self.tick([lambda: self.data_path.signal_latch_i(MUX.I_DEC)])
+        self.tick([lambda: self.signal_latch_pc(MUX.PC_RET)])
 
     def di(self):
         self.tick([lambda: self.signal_latch_ps(False)])

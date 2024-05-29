@@ -45,11 +45,11 @@
 * ```=``` - (n1 n2 >> n3) 1 если равны, 0 если нет
 * ```>``` - (n1 n2 >> n3) 1 если n1 > n2, 0 если нет
 * ```or``` - (n1 n2 >> n1 | n2)
-* ```drop``` - (n1 n2 >> n1)
-* ```mod``` - (n1 n2 >> n1 mod n2)
-* ```over``` - (n1 n2 >> n1 n2 n1)
-* ```swap``` - (n1 n2 >> n2 n1)
-* ```dup``` - (n1 >> n1 n1)
+* ```drop``` - (n1 n2 >> n1) удалить значение с верхушки стека
+* ```mod``` - (n1 n2 >> n1 % n2) остаток от деления n1 на n2
+* ```over``` - (n1 n2 >> n1 n2 n1) положить на стек следующее значение после текущего
+* ```swap``` - (n1 n2 >> n2 n1) поменять верхушку стека и следующее значение местами
+* ```dup``` - (n1 >> n1 n1) дублировать значение на верхушке стека данных
 * ```key``` - (n1 >> n2) - ввод c порта n1
 * ```emit``` - (n1 n2 >> ) - вывести ASCII символ с кодом n1 в IO порт n2
 * ```read``` - (n1 >> n2) - прочитать значение с порта n1 и положить на стек
@@ -214,7 +214,7 @@
 
 ### 1)Трансформирование текста в последовательность термов
 
-Реализуется функцией [translator.py:split_to_terms](translator.py#L24).
+Реализуется функцией [translator.py:split_to_terms](translator.py#L60).
 
 ### 2)Валидация термов
 
@@ -230,19 +230,19 @@
 На данном этапе проводится валидация термов, оповещение пользователя в случае проваленной трансляции с указанием ошибки
 и номера слова, в котором ошибка
 
-Реализуется функцией [translator.py:validate_and_correct_terms](translator.py#L139).
+Реализуется функцией [translator.py:validate_and_correct_terms](translator.py#L175).
 
 ### 3)Генерация машинного кода
 
 Одному терму может соответствовать несколько Opcode.
 
-1. [translator.py:fix_interrupt](translator.py#L289): Этот вызов функции гарантирует, что для обработки прерываний в
+1. [translator.py:fix_interrupt](translator.py#L326): Этот вызов функции гарантирует, что для обработки прерываний в
    список терминов добавлен
    специальный термин.
-2. Для каждого термина в списке terms функция [translator.py:term2opcodes](translator.py#L192) вызывается для
+2. Для каждого термина в списке terms функция [translator.py:term2opcodes](translator.py#L229) вызывается для
    преобразования
    термина в список кодов операций
-3. [translator.py:fix_addresses](translator.py#L270): Этот вызов функции гарантирует, что адреса в кодах операций
+3. [translator.py:fix_addresses](translator.py#L307): Этот вызов функции гарантирует, что адреса в кодах операций
    скорректированы в соответствии с
    размером программы и распределением памяти.
 4. К списку кодов операций добавляется специальный код операции HALT, который
@@ -286,12 +286,12 @@ DataPath:
 ControlUnit:
 ![ControlUnit](schemes/controlunit.jpg)
 
-DataPath реализован в [machine.py:DataPath](machine.py#L121)
+DataPath реализован в [machine.py:DataPath](machine.py#L105)
 
 Stack является частью DataPath, включен в
-класс [machine.py:DataPath](machine.py#L121)
+класс [machine.py:DataPath](machine.py#L105)
 
-ControlUnit реализован в [machine.py:ControlUnit](machine.py#L245)
+ControlUnit реализован в [machine.py:ControlUnit](machine.py#L227)
 
 Память:
 
@@ -312,7 +312,7 @@ ControlUnit реализован в [machine.py:ControlUnit](machine.py#L245)
 
 Остановка моделирования происходит если превышен лимит инструкций, либо выполнен halt
 
-Реализация дешифрации команд [machine.py:ControlUnit:decode_execute](machine.py#L481).
+Реализация дешифрации команд [machine.py:ControlUnit:decode_execute](machine.py#L465).
 
 ## Тестирование
 
